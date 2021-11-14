@@ -18,21 +18,23 @@ public class AgentBootstrap {
 
     static {
         try {
-            File arthasLogDir = new File(System.getProperty("user.home") + File.separator + "logs" + File.separator);
-            if (!arthasLogDir.exists()) {
-                arthasLogDir.mkdirs();
+            File agentLogDir = new File(System.getProperty("user.dir") + File.separator
+                    + "logs" + File.separator);
+            if (!agentLogDir.exists()) {
+                agentLogDir.mkdirs();
             }
-            if (!arthasLogDir.exists()) {
-                arthasLogDir = new File(System.getProperty("java.io.tmpdir") + File.separator + "logs" + File.separator);
-                if (!arthasLogDir.exists()) {
-                    arthasLogDir.mkdirs();
+            if (!agentLogDir.exists()) {
+                agentLogDir = new File(System.getProperty("java.io.tmpdir") + File.separator
+                        + "logs" + File.separator);
+                if (!agentLogDir.exists()) {
+                    agentLogDir.mkdirs();
                 }
             }
-            File log = new File(arthasLogDir, "agent.log");
-
+            File log = new File(agentLogDir, "agent.log");
             if (!log.exists()) {
                 log.createNewFile();
             }
+            System.out.println("agent log path: " + log.getAbsolutePath());
             ps = new PrintStream(new FileOutputStream(log, true));
         } catch (Throwable t) {
             t.printStackTrace(ps);
@@ -77,6 +79,7 @@ public class AgentBootstrap {
 
     private static synchronized void main(String args, final Instrumentation inst) {
         try {
+            System.out.println("agent start");
             ps.println("agent start");
         } catch (Throwable t) {
             t.printStackTrace(ps);

@@ -12,6 +12,8 @@
     <modules>
         <module>hot-reload-core</module>
         <module>hot-reload-agent</module>
+        <module>hot-reload-server</module>
+        <module>hot-reload-watcher</module>
     </modules>
 
     <properties>
