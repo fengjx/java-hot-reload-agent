@@ -3,7 +3,7 @@
     <Properties>
         <Property name="LOG_DIR">$${sys:log.dir:-${sys:user.dir}/logs}</Property>
         <Property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%t] %class{36}-%L %M - %msg%n</Property>
-        <Property name="APP_LOG_NAME">watcher.log</Property>
+        <Property name="APP_LOG_NAME">agent.log</Property>
     </Properties>
 
     <Appenders>
