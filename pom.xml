@@ -19,7 +19,18 @@
     <properties>
         <java.version>1.8</java.version>
         <encoding>UTF-8</encoding>
+        <log4j2.version>2.14.1</log4j2.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.22</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>
@@ -44,7 +55,6 @@
             </plugins>
         </pluginManagement>
     </build>
-
 
 
 </project>

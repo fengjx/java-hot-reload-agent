@@ -11,7 +11,8 @@ public class ServerBootstrap {
 
     public static void main(String[] args) {
         port(8080);
-        connect("/ping", (req, res) -> "hot-reload-server: pong");
+        before((request, response) -> response.header("Server", "hot-reload-server"));
+        get("/ping", (req, res) -> "hot-reload-server: pong");
         post("/hotfix", Routers.hotfix());
     }
 
