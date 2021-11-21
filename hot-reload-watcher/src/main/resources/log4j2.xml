@@ -43,7 +43,7 @@
     </Appenders>
 
     <Loggers>
-        <root level="info">
+        <root level="debug">
             <appender-ref ref="SelectConsole"/>
             <appender-ref ref="AppLog"/>
         </root>

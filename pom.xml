@@ -10,10 +10,12 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
+        <module>hot-reload-common</module>
         <module>hot-reload-core</module>
         <module>hot-reload-agent</module>
         <module>hot-reload-server</module>
         <module>hot-reload-watcher</module>
+        <module>packaging</module>
     </modules>
 
     <properties>
@@ -24,6 +26,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.fengjx.reload</groupId>
+                <artifactId>hot-reload-common</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -66,6 +73,10 @@
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.mybatis.generator</groupId>
