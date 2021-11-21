@@ -22,6 +22,14 @@
             <version>1.18.22</version>
             <optional>true</optional>
         </dependency>
+        <!-- for com.sun.tools.attach.VirtualMachine api -->
+        <dependency>
+            <groupId>com.github.olivergondza</groupId>
+            <artifactId>maven-jdk-tools-wrapper</artifactId>
+            <version>0.1</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
@@ -70,24 +78,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>jdk_tools</id>
-            <activation>
-                <jdk>(,1.9)</jdk>
-            </activation>
-            <!-- No dependencies needed by Jigsaw -->
-            <dependencies>
-                <dependency>
-                    <groupId>com.sun</groupId>
-                    <artifactId>tools</artifactId>
-                    <version>1.8</version>
-                    <scope>system</scope>
-                    <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 
 </project>
