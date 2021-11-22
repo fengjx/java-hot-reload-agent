@@ -16,4 +16,4 @@ dist-to-home:
 	cp hot-reload-watcher/target/hot-reload-watcher.jar ${HOME_DIR}/hot-reload-watcher.jar
 
 package:
-	mvn --settings=${maven_settings} clean package -Dmaven.test.skip=true
+	mvn --settings=${maven_settings} clean package -Dmaven.test.skip=true -P full
