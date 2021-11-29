@@ -1,5 +1,7 @@
 package com.fengjx.reload.core;
 
+import com.fengjx.reload.core.consts.FileExtension;
+import com.fengjx.reload.core.dynamiccompiler.DynamicCompiler;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -14,9 +16,32 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * @author liuzhengyang
- * 2021/1/4
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+/*-
+ * #%L
+ * MIT License
+ * %%
+ * Copyright (c) 2019 刘正阳
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * %%
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * %%
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * #%L
  */
 @Slf4j
 public class HotReloadWorker {
@@ -33,14 +58,20 @@ public class HotReloadWorker {
                 return;
             }
             File file = Paths.get(replaceTargetFile).toFile();
-            if (replaceTargetFile.endsWith(".class")) {
+            if (replaceTargetFile.endsWith(FileExtension.CLASS_FILE_EXTENSION)) {
+                log.info("Reload by class file");
                 byte[] newClazzByteCode = Files.readAllBytes(file.toPath());
                 doReloadClassFile(instrumentation, className, newClazzByteCode);
+            } else if (replaceTargetFile.endsWith(FileExtension.JAVA_FILE_EXTENSION)) {
+                log.info("Reload by java file");
+                byte[] newClazzSourceBytes = Files.readAllBytes(file.toPath());
+                doCompileThenReloadClassFile(instrumentation, className, new String(newClazzSourceBytes, UTF_8));
             }
         } catch (Exception e) {
             log.error("class reload failed {} {}", className, replaceTargetFile, e);
         }
     }
+
 
     private static void doReloadClassFile(Instrumentation instrumentation, String className,
                                           byte[] newClazzByteCode) throws UnmodifiableClassException, ClassNotFoundException {
@@ -51,6 +82,31 @@ public class HotReloadWorker {
             instrumentation.redefineClasses(new ClassDefinition(clazz, newClazzByteCode));
             log.info("Class: " + clazz + " reload success!");
         }
+    }
+
+    private static void doCompileThenReloadClassFile(Instrumentation instrumentation, String className,
+                                                     String sourceCode) {
+        ClassLoader classLoader = getClassLoader(className, instrumentation);
+        log.info("Target class {} class loader {}", className, classLoader);
+        DynamicCompiler dynamicCompiler = new DynamicCompiler(classLoader);
+        dynamicCompiler.addSource(className, sourceCode);
+        Map<String, byte[]> classNameToByteCodeMap = dynamicCompiler.buildByteCodes();
+        classNameToByteCodeMap.forEach((clazzName, bytes) -> {
+            try {
+                Files.write(Paths.get("/tmp/replace_" + clazzName), bytes);
+                doReloadClassFile(instrumentation, clazzName, bytes);
+            } catch (Exception e) {
+                log.error("Class " + clazzName + " reload error ", e);
+            }
+        });
+    }
+
+    private static ClassLoader getClassLoader(String className, Instrumentation instrumentation) {
+        Class<?> targetClass = findTargetClass(className, instrumentation);
+        if (targetClass != null) {
+            return targetClass.getClassLoader();
+        }
+        return HotReloadWorker.class.getClassLoader();
     }
 
     private static Class<?> getToReloadClass(Instrumentation instrumentation, String className,

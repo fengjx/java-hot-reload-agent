@@ -2,6 +2,7 @@ package com.fengjx.reload.watcher;
 
 import com.fengjx.reload.common.Config;
 import com.fengjx.reload.common.utils.StrUtils;
+import com.fengjx.reload.core.consts.FileExtension;
 import com.sun.tools.attach.VirtualMachine;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -26,7 +27,6 @@ import static java.nio.file.StandardWatchEventKinds.*;
 @Slf4j
 public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
 
-    private static final String CLASS_FILE_EXTENSION = ".class";
 
     private final String pid;
     private final String watchPath;
@@ -81,7 +81,7 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
 
     private String fileToClassName(File classFile) {
         String path = classFile.getAbsolutePath().replace(watchPath, "")
-                .replace(CLASS_FILE_EXTENSION, "");
+                .replace(FileExtension.CLASS_FILE_EXTENSION, "");
         String className = path.replaceAll("/", ".")
                 .replaceAll("\\\\", ".");
         if (className.startsWith(".")) {
@@ -128,7 +128,8 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
                 HiddenFileFilter.VISIBLE);
         IOFileFilter files = FileFilterUtils.and(
                 FileFilterUtils.fileFileFilter(),
-                FileFilterUtils.suffixFileFilter(".class"));
+                FileFilterUtils.suffixFileFilter(FileExtension.CLASS_FILE_EXTENSION),
+                FileFilterUtils.suffixFileFilter(FileExtension.JAVA_FILE_EXTENSION));
         IOFileFilter filter = FileFilterUtils.or(directories, files);
         FileAlterationObserver observer = new FileAlterationObserver(new File(watchPath), filter);
         observer.addListener(this);
