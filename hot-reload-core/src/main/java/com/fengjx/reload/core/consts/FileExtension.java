@@ -8,5 +8,8 @@ public interface FileExtension {
 
     String JAVA_FILE_EXTENSION = JavaFileObject.Kind.SOURCE.extension;
 
+    String CLASS_FILE_EXT = "class";
+    String JAVA_FILE_EXT = "java";
+
 
 }

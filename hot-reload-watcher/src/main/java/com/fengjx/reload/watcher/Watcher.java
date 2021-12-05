@@ -1,10 +1,14 @@
 package com.fengjx.reload.watcher;
 
-import com.fengjx.reload.common.Config;
-import com.fengjx.reload.common.utils.StrUtils;
+import com.fengjx.reload.common.utils.DigestUtils;
+import com.fengjx.reload.common.utils.ThreadUtils;
 import com.fengjx.reload.core.consts.FileExtension;
-import com.sun.tools.attach.VirtualMachine;
+import com.fengjx.reload.watcher.worker.Worker;
+import com.fengjx.reload.watcher.worker.WorkerFactory;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -14,12 +18,14 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Paths;
-import java.nio.file.WatchService;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-import static java.nio.file.StandardWatchEventKinds.*;
 
 /**
  * @author FengJianxin
@@ -27,29 +33,40 @@ import static java.nio.file.StandardWatchEventKinds.*;
 @Slf4j
 public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
 
+    private boolean running = false;
+    private final String[] watchPaths;
+    private FileAlterationMonitor monitor;
+    private final ConcurrentHashMap<String, String> oldVersion = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, String> fileCache = new ConcurrentHashMap<>();
+    private final Worker worker;
 
-    private final String pid;
-    private final String watchPath;
-    private final WatchService watchService;
+    public Watcher() {
+        Config config = Config.get();
+        this.watchPaths = config.getWatchPaths();
+        this.worker = WorkerFactory.createWorker();
+    }
 
-    public Watcher(String pid, String watchPath) {
-        this.pid = pid;
-        this.watchPath = watchPath;
-        try {
-            watchService = FileSystems.getDefault().newWatchService();
-            Paths.get(watchPath).register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private void loadOldVersion(String[] watchPaths) throws IOException, NoSuchAlgorithmException {
+        for (String watchPath : watchPaths) {
+            Collection<File> files = FileUtils.listFiles(new File(watchPath), new String[]{
+                    FileExtension.CLASS_FILE_EXT,
+                    FileExtension.JAVA_FILE_EXT
+            }, true);
+            for (File file : files) {
+                String checksum = DigestUtils.checksum(file);
+                oldVersion.put(file.getAbsolutePath(), checksum);
+            }
         }
     }
+
 
     /**
      * 文件创建执行
      */
     @Override
     public void onFileCreate(File file) {
-        log.info("[create]:" + file.getAbsolutePath());
-        reloadClass(fileToClassName(file), file.getAbsolutePath());
+        log.info("create: {}", file.getAbsolutePath());
+        addCache(file);
     }
 
     /**
@@ -57,8 +74,8 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
      */
     @Override
     public void onFileChange(File file) {
-        log.info("[modify]:" + file.getAbsolutePath());
-        reloadClass(fileToClassName(file), file.getAbsolutePath());
+        log.info("modify: {}", file.getAbsolutePath());
+        addCache(file);
     }
 
     /**
@@ -66,77 +83,112 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
      */
     @Override
     public void onFileDelete(File file) {
-        log.info("[delete]:" + file.getAbsolutePath());
-        // todo
+        log.info("delete: {}", file.getAbsolutePath());
+        removeCache(file);
+    }
+
+    private void addCache(File file) {
+        synchronized (this) {
+            try {
+                String absolutePath = file.getAbsolutePath();
+                String checksum = DigestUtils.checksum(file);
+                String oldChecksum = fileCache.get(absolutePath);
+                if (checksum.equals(oldChecksum)) {
+                    return;
+                }
+                fileCache.put(absolutePath, checksum);
+                log.info("add watch file cache: {}", absolutePath);
+            } catch (Exception e) {
+                log.error("add watch file cache error", e);
+            }
+        }
+    }
+
+    private void removeCache(File file) {
+        synchronized (this) {
+            String absolutePath = file.getAbsolutePath();
+            fileCache.remove(absolutePath);
+            oldVersion.remove(absolutePath);
+            log.info("remove watch file cache: {}", absolutePath);
+        }
     }
 
     public void stop() {
         log.info("watcher stop");
         try {
-            watchService.close();
-        } catch (IOException e) {
-            log.error("watcher stop error", e);
-        }
-    }
-
-    private String fileToClassName(File classFile) {
-        String path = classFile.getAbsolutePath().replace(watchPath, "")
-                .replace(FileExtension.CLASS_FILE_EXTENSION, "");
-        String className = path.replaceAll("/", ".")
-                .replaceAll("\\\\", ".");
-        if (className.startsWith(".")) {
-            className = className.substring(1);
-        }
-        if (className.endsWith(".")) {
-            className = className.substring(0, className.length() - 1);
-        }
-        return className;
-    }
-
-    private synchronized void reloadClass(String className, String classFilePath) {
-        log.info("reload class: {}, {}", className, classFilePath);
-        if (StrUtils.isBlank(pid)) {
-            return;
-        }
-        VirtualMachine attach = null;
-        try {
-            attach = VirtualMachine.attach(pid);
-            log.debug("load agent jar: {}", Config.getAgentJar());
-            attach.loadAgent(Config.getAgentJar(), className + "," + classFilePath);
-        } catch (Exception e) {
-            log.error("reload class error", e);
-        } finally {
-            if (attach != null) {
-                try {
-                    attach.detach();
-                } catch (IOException e) {
-                    log.error("vm detach error", e);
-                }
+            running = false;
+            if (monitor != null) {
+                monitor.stop();
             }
-            log.info("reload class finished");
+        } catch (Exception e) {
+            log.error("Watcher stop error", e);
         }
+    }
+
+    /**
+     * 注册监听器
+     */
+    private List<FileAlterationObserver> createObservers(String[] dirs) {
+        List<FileAlterationObserver> observers = Lists.newArrayList();
+        for (String dir : dirs) {
+            // 过滤器，只监听class文件
+            IOFileFilter directories = FileFilterUtils.and(
+                    FileFilterUtils.directoryFileFilter(),
+                    HiddenFileFilter.VISIBLE);
+
+            IOFileFilter classFiles = FileFilterUtils.and(
+                    FileFilterUtils.fileFileFilter(),
+                    FileFilterUtils.suffixFileFilter(FileExtension.CLASS_FILE_EXTENSION));
+
+            IOFileFilter srcFiles = FileFilterUtils.and(
+                    FileFilterUtils.fileFileFilter(),
+                    FileFilterUtils.suffixFileFilter(FileExtension.JAVA_FILE_EXTENSION));
+
+            IOFileFilter filter = FileFilterUtils.or(directories, classFiles, srcFiles);
+            FileAlterationObserver observer = new FileAlterationObserver(new File(dir), filter);
+            observer.addListener(this);
+            observers.add(observer);
+        }
+        return observers;
+    }
+
+    private void batchReloadClass() {
+        Set<String> fileSet = Sets.newHashSet();
+        for (Map.Entry<String, String> entry : fileCache.entrySet()) {
+            String path = entry.getKey();
+            String checksum = entry.getValue();
+            if (check(path, checksum)) {
+                fileSet.add(path);
+                // replace old version
+                oldVersion.put(path, checksum);
+            }
+        }
+        worker.doReload(fileSet);
+    }
+
+    private boolean check(String path, String checksum) {
+        String oldChecksum = oldVersion.get(path);
+        return !checksum.equals(oldChecksum);
     }
 
     @Override
     public void run() {
         log.info("watcher start");
-        // 轮询间隔 3 秒
-        long interval = TimeUnit.SECONDS.toMillis(3);
-        // 过滤器，只监听class文件
-        IOFileFilter directories = FileFilterUtils.and(
-                FileFilterUtils.directoryFileFilter(),
-                HiddenFileFilter.VISIBLE);
-        IOFileFilter files = FileFilterUtils.and(
-                FileFilterUtils.fileFileFilter(),
-                FileFilterUtils.suffixFileFilter(FileExtension.CLASS_FILE_EXTENSION),
-                FileFilterUtils.suffixFileFilter(FileExtension.JAVA_FILE_EXTENSION));
-        IOFileFilter filter = FileFilterUtils.or(directories, files);
-        FileAlterationObserver observer = new FileAlterationObserver(new File(watchPath), filter);
-        observer.addListener(this);
-        FileAlterationMonitor monitor = new FileAlterationMonitor(interval, observer);
-        // 开始监控
         try {
+            running = true;
+            loadOldVersion(watchPaths);
+            // 轮询间隔 3 秒
+            long interval = TimeUnit.SECONDS.toMillis(3);
+            monitor = new FileAlterationMonitor(interval, createObservers(watchPaths));
+            // 开始监控
             monitor.start();
+            ThreadUtils.run("worker-thread", true, () -> {
+                log.info("worker start");
+                while (running) {
+                    batchReloadClass();
+                    ThreadUtils.sleep(10 * 1000);
+                }
+            });
         } catch (Exception e) {
             log.error("watcher start error", e);
         }

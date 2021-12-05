@@ -1,6 +1,6 @@
 package com.fengjx.reload.agent;
 
-import com.fengjx.reload.common.Config;
+import com.fengjx.reload.common.AgentConfig;
 
 import java.io.File;
 import java.lang.instrument.Instrumentation;
@@ -27,7 +27,7 @@ public class ReloadClassHandler implements Handler {
             throw new IllegalArgumentException(args);
         }
         try {
-            File coreJarFile = Config.getCoreJarFile();
+            File coreJarFile = AgentConfig.getCoreJarFile();
             if (myClassLoader == null) {
                 myClassLoader = new MyClassloader(
                         new URL[]{coreJarFile.toURI().toURL()});

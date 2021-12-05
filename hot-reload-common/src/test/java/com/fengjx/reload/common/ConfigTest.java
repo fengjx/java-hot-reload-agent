@@ -6,7 +6,7 @@ public class ConfigTest {
 
     @Test
     public void testConfig(){
-        System.out.println(Config.getCoreJarPath());
+        System.out.println(AgentConfig.getCoreJarPath());
     }
 
 

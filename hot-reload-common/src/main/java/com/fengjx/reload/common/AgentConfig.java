@@ -8,7 +8,7 @@ import java.io.File;
  * @author FengJianxin
  * @since 2021-11-20
  */
-public class Config {
+public class AgentConfig {
 
     private static final String AGENT_HOME_PARAM = "agent_home";
 

@@ -1,13 +1,11 @@
 package com.fengjx.reload.watcher;
 
+import com.fengjx.reload.common.utils.ThreadUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @author fengjianxin
@@ -15,44 +13,17 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class WatcherBootstrap {
 
-    @SuppressWarnings("AlibabaThreadPoolCreation")
-    private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
-    private static WatcherBootstrap watcherBootstrap;
-    private Thread shutdown;
-    private String pid;
-    private final String watchPath;
-    private Watcher watcher;
-
-    public WatcherBootstrap(String pid, String watchPath) {
-        this.pid = pid;
-        this.watchPath = watchPath;
-    }
-
-    public void destroy() {
-        EXECUTOR.shutdown();
-    }
-
     /**
      * invoke for agent
      */
-    public synchronized static WatcherBootstrap getInstance(String pid, String watchPath) {
-        if (watcherBootstrap == null) {
-            watcherBootstrap = new WatcherBootstrap(pid, watchPath);
-        }
-        return watcherBootstrap;
-    }
-
-    /**
-     * invoke for agent
-     */
-    public void boot() {
-        watcher = new Watcher(pid, watchPath);
-        EXECUTOR.submit(watcher);
+    public static void boot() {
+        Watcher watcher = new Watcher();
+        ThreadUtils.run("watcher-thread", watcher);
         //noinspection AlibabaAvoidManuallyCreateThread
-        shutdown = new Thread("watcher-shutdown-hooker") {
+        Thread shutdown = new Thread("watcher-shutdown-hooker") {
             @Override
             public void run() {
-                WatcherBootstrap.this.destroy();
+                watcher.stop();
             }
         };
         Runtime.getRuntime().addShutdownHook(shutdown);
@@ -66,9 +37,9 @@ public class WatcherBootstrap {
         CommandLine commandLine = defaultParser.parse(options, args);
         String path = commandLine.getOptionValue("path");
         String pid = commandLine.getOptionValue("pid");
-        watcherBootstrap = getInstance(pid, path);
+        Config.init(pid, path.split(","));
         log.info("watcher start, watchPath: {}, pid: {}", path, pid);
-        watcherBootstrap.boot();
+        boot();
     }
 
 }
