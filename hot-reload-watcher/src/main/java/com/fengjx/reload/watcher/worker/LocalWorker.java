@@ -1,11 +1,11 @@
 package com.fengjx.reload.watcher.worker;
 
 import com.fengjx.reload.common.AgentConfig;
+import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.utils.StrUtils;
 import com.fengjx.reload.core.consts.FileExtension;
 import com.fengjx.reload.watcher.Config;
 import com.sun.tools.attach.VirtualMachine;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Set;
@@ -14,7 +14,6 @@ import java.util.Set;
  * @author fengjianxin
  * @since 2021-12-05
  */
-@Slf4j
 public class LocalWorker implements Worker {
 
     @Override
@@ -28,7 +27,7 @@ public class LocalWorker implements Worker {
      * 文件路径转类名
      */
     private String fileToClassName(String classFilePath) {
-        String[] watchPaths = Config.get().getWatchPaths();
+        String[] watchPaths = Config.me().getWatchPaths();
         String path = classFilePath;
         for (String watchPath : watchPaths) {
             if (path.startsWith(watchPath)) {
@@ -51,27 +50,28 @@ public class LocalWorker implements Worker {
     }
 
     private synchronized void reloadClass(String className, String classFilePath) {
-        log.info("reload class: {}, {}", className, classFilePath);
-        String pid = Config.get().getPid();
+        AnsiLog.info("Reload class: {}, {}", className, classFilePath);
+        String pid = Config.me().getPid();
         if (StrUtils.isBlank(pid)) {
             return;
         }
         VirtualMachine attach = null;
         try {
             attach = VirtualMachine.attach(pid);
-            log.debug("load agent jar: {}", AgentConfig.getAgentJar());
+            AnsiLog.debug("Load agent jar: {}", AgentConfig.getAgentJar());
             attach.loadAgent(AgentConfig.getAgentJar(), className + "," + classFilePath);
+            AnsiLog.info("Reload class success");
         } catch (Exception e) {
-            log.error("reload class error", e);
+            AnsiLog.error("Reload class error", e);
         } finally {
             if (attach != null) {
                 try {
                     attach.detach();
                 } catch (IOException e) {
-                    log.error("vm detach error", e);
+                    AnsiLog.error("VirtualMachine detach error", e);
                 }
             }
-            log.info("reload class finished");
+            AnsiLog.info("Reload class finished");
         }
     }
 

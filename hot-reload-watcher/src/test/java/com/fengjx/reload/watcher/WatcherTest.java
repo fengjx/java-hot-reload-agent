@@ -12,7 +12,7 @@ public class WatcherTest {
         Config.init("", new String[]{
                 temp.toFile().getAbsolutePath()
         });
-        new Thread(new Watcher()).start();
+        new Watcher().start();
         Thread.sleep(1000 * 60 * 10);
     }
 

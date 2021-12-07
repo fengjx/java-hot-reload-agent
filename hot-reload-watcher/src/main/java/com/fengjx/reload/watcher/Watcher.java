@@ -1,13 +1,12 @@
 package com.fengjx.reload.watcher;
 
+import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.utils.DigestUtils;
-import com.fengjx.reload.common.utils.ThreadUtils;
 import com.fengjx.reload.core.consts.FileExtension;
 import com.fengjx.reload.watcher.worker.Worker;
 import com.fengjx.reload.watcher.worker.WorkerFactory;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
@@ -30,10 +29,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author FengJianxin
  */
-@Slf4j
-public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
+public class Watcher extends FileAlterationListenerAdaptor {
 
-    private boolean running = false;
     private final String[] watchPaths;
     private FileAlterationMonitor monitor;
     private final ConcurrentHashMap<String, String> oldVersion = new ConcurrentHashMap<>();
@@ -41,7 +38,7 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
     private final Worker worker;
 
     public Watcher() {
-        Config config = Config.get();
+        Config config = Config.me();
         this.watchPaths = config.getWatchPaths();
         this.worker = WorkerFactory.createWorker();
     }
@@ -65,7 +62,7 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
      */
     @Override
     public void onFileCreate(File file) {
-        log.info("create: {}", file.getAbsolutePath());
+        AnsiLog.info("create: {}", file.getAbsolutePath());
         addCache(file);
     }
 
@@ -74,7 +71,7 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
      */
     @Override
     public void onFileChange(File file) {
-        log.info("modify: {}", file.getAbsolutePath());
+        AnsiLog.info("modify: {}", file.getAbsolutePath());
         addCache(file);
     }
 
@@ -83,7 +80,7 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
      */
     @Override
     public void onFileDelete(File file) {
-        log.info("delete: {}", file.getAbsolutePath());
+        AnsiLog.info("delete: {}", file.getAbsolutePath());
         removeCache(file);
     }
 
@@ -97,9 +94,9 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
                     return;
                 }
                 fileCache.put(absolutePath, checksum);
-                log.info("add watch file cache: {}", absolutePath);
+                AnsiLog.info("add watch file cache: {}", absolutePath);
             } catch (Exception e) {
-                log.error("add watch file cache error", e);
+                AnsiLog.error("add watch file cache error", e);
             }
         }
     }
@@ -109,19 +106,34 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
             String absolutePath = file.getAbsolutePath();
             fileCache.remove(absolutePath);
             oldVersion.remove(absolutePath);
-            log.info("remove watch file cache: {}", absolutePath);
+            AnsiLog.info("remove watch file cache: {}", absolutePath);
+        }
+    }
+
+
+    public void start() {
+        AnsiLog.debug("watcher start");
+        try {
+            loadOldVersion(watchPaths);
+            // 轮询间隔 3 秒
+            long interval = TimeUnit.SECONDS.toMillis(3);
+            monitor = new FileAlterationMonitor(interval, createObservers(watchPaths));
+            // 开始监控
+            monitor.start();
+        } catch (Exception e) {
+            AnsiLog.error("watcher start error", e);
         }
     }
 
     public void stop() {
-        log.info("watcher stop");
+        AnsiLog.info("watcher stop");
         try {
-            running = false;
             if (monitor != null) {
-                monitor.stop();
+                monitor.stop(3000);
             }
         } catch (Exception e) {
-            log.error("Watcher stop error", e);
+            AnsiLog.error("watcher stop error");
+            AnsiLog.error(e);
         }
     }
 
@@ -152,7 +164,10 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
         return observers;
     }
 
-    private void batchReloadClass() {
+    /**
+     * 重新加载变更的 Class
+     */
+    public void reloadClass() {
         Set<String> fileSet = Sets.newHashSet();
         for (Map.Entry<String, String> entry : fileCache.entrySet()) {
             String path = entry.getKey();
@@ -163,6 +178,10 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
                 oldVersion.put(path, checksum);
             }
         }
+        if (fileSet.isEmpty()) {
+            AnsiLog.info("No change files");
+            return;
+        }
         worker.doReload(fileSet);
     }
 
@@ -171,26 +190,4 @@ public class Watcher extends FileAlterationListenerAdaptor implements Runnable {
         return !checksum.equals(oldChecksum);
     }
 
-    @Override
-    public void run() {
-        log.info("watcher start");
-        try {
-            running = true;
-            loadOldVersion(watchPaths);
-            // 轮询间隔 3 秒
-            long interval = TimeUnit.SECONDS.toMillis(3);
-            monitor = new FileAlterationMonitor(interval, createObservers(watchPaths));
-            // 开始监控
-            monitor.start();
-            ThreadUtils.run("worker-thread", true, () -> {
-                log.info("worker start");
-                while (running) {
-                    batchReloadClass();
-                    ThreadUtils.sleep(10 * 1000);
-                }
-            });
-        } catch (Exception e) {
-            log.error("watcher start error", e);
-        }
-    }
 }

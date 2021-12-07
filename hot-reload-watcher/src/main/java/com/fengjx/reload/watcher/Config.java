@@ -19,7 +19,7 @@ public class Config {
         INSTANCE.setWatchPaths(watchPaths);
     }
 
-    public static Config get() {
+    public static Config me() {
         return INSTANCE;
     }
 
