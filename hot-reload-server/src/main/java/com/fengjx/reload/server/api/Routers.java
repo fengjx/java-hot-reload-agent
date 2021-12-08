@@ -1,7 +1,8 @@
 package com.fengjx.reload.server.api;
 
 import lombok.extern.slf4j.Slf4j;
-import spark.Route;
+import spark.Request;
+import spark.Response;
 
 /**
  * @author fengjianxin
@@ -9,13 +10,10 @@ import spark.Route;
 @Slf4j
 public class Routers {
 
-    public static Route hotfix() {
-        return (request, response) -> {
-            String className = request.params("className");
-            log.info("className: {}", className);
-            return "ok";
-        };
+    public static Object hotfix(Request req, Response resp) {
+        String className = req.params("className");
+        log.info("className: {}", className);
+        return "ok";
     }
-
 
 }
