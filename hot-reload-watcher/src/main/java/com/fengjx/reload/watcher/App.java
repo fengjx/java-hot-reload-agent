@@ -30,14 +30,6 @@ public class App {
         running = true;
         startWatcher();
         startCommandListener();
-        // noinspection AlibabaAvoidManuallyCreateThread
-        Thread shutdown = new Thread("watcher-shutdown-hooker") {
-            @Override
-            public void run() {
-                App.this.stop();
-            }
-        };
-        Runtime.getRuntime().addShutdownHook(shutdown);
     }
 
     private void startWatcher() {

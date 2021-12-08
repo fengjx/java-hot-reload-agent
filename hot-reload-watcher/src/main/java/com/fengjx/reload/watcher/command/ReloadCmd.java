@@ -22,7 +22,7 @@ public class ReloadCmd implements Cmd {
 
     @Override
     public void handle() {
-        AnsiLog.info("reload class");
+        AnsiLog.info("do reload class");
         App.me().reload();
     }
 

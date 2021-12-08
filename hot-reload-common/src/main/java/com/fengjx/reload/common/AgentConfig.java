@@ -10,7 +10,7 @@ import java.io.File;
  */
 public class AgentConfig {
 
-    private static final String AGENT_HOME_PARAM = "agent_home";
+    private static final String AGENT_HOME_PARAM = "AGENT_HOME";
 
     public static String getHomeDir() {
         String home = System.getProperty(AGENT_HOME_PARAM);

@@ -50,7 +50,7 @@ public class LocalWorker implements Worker {
     }
 
     private synchronized void reloadClass(String className, String classFilePath) {
-        AnsiLog.info("Reload class: {}, {}", className, classFilePath);
+        AnsiLog.info("Reload class: {}", className);
         String pid = Config.me().getPid();
         if (StrUtils.isBlank(pid)) {
             return;
@@ -62,7 +62,8 @@ public class LocalWorker implements Worker {
             attach.loadAgent(AgentConfig.getAgentJar(), className + "," + classFilePath);
             AnsiLog.info("Reload class success");
         } catch (Exception e) {
-            AnsiLog.error("Reload class error", e);
+            AnsiLog.error("Reload class error");
+            AnsiLog.error(e);
         } finally {
             if (attach != null) {
                 try {
