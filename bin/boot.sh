@@ -140,16 +140,15 @@ set_env()
 
 watcher()
 {
-  echo "start hot-reload-watcher"
-
+  echo "[INFO] start hot-reload-watcher"
   set_env
 
   export AGENT_HOME=$BASE
-  echo "agent_home: "${AGENT_HOME}
+  echo "[INFO] AGENT_HOME: "${AGENT_HOME}
   pid=$1
-  echo "pid: "${pid}
+  echo "[INFO] pid: "${pid}
   watch_path=$2
-  echo "watch path: "${watch_path}
+  echo "[INFO] watch path: "${watch_path}
 
   java ${JVM_OPTS} -jar hot-reload-watcher.jar --pid=${pid} --path=${watch_path}
 }
@@ -157,7 +156,7 @@ watcher()
 
 server()
 {
-  echo "todo"
+  echo "功能未实现，敬请期待"
 }
 
 
@@ -169,6 +168,6 @@ watcher)
     watcher "$@"
     ;;
 server)
-    watcher "$@"
+    server "$@"
     ;;
 esac
