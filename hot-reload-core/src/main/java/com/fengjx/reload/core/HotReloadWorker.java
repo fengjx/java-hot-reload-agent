@@ -23,7 +23,7 @@
  */
 package com.fengjx.reload.core;
 
-import com.fengjx.reload.core.consts.FileExtension;
+import com.fengjx.reload.common.consts.FileExtension;
 import com.fengjx.reload.core.dynamiccompiler.DynamicCompiler;
 import lombok.extern.slf4j.Slf4j;
 

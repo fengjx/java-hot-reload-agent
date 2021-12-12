@@ -1,6 +1,7 @@
 package com.fengjx.reload.agent;
 
 import com.fengjx.reload.common.AgentConfig;
+import com.fengjx.reload.common.AnsiLog;
 
 import java.io.File;
 import java.lang.instrument.Instrumentation;
@@ -32,12 +33,13 @@ public class ReloadClassHandler implements Handler {
                 myClassLoader = new MyClassloader(
                         new URL[]{coreJarFile.toURI().toURL()});
             }
-            System.out.println("agent core urls is " + coreJarFile.toURI().toURL());
+            AnsiLog.info("agent core urls is {}", coreJarFile.toURI().toURL());
             Class<?> hotReloadWorkerClass = myClassLoader.loadClass(HOT_RELOAD_WORKER_CLASS);
             Method method = hotReloadWorkerClass.getDeclaredMethod(HOT_RELOAD_RELOAD_METHOD, Instrumentation.class, String[].class);
             method.invoke(null, inst, splits);
         } catch (Exception e) {
-            System.out.printf("Reload failed %s%n", e);
+            AnsiLog.error("Reload failed: {}", e.getMessage());
+            AnsiLog.error(e);
         }
     }
 }

@@ -1,12 +1,10 @@
 package com.fengjx.reload.watcher;
 
 import com.fengjx.reload.common.AnsiLog;
+import com.fengjx.reload.common.consts.FileExtension;
 import com.fengjx.reload.common.utils.DigestUtils;
-import com.fengjx.reload.core.consts.FileExtension;
 import com.fengjx.reload.watcher.worker.Worker;
 import com.fengjx.reload.watcher.worker.WorkerFactory;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
@@ -18,10 +16,7 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -141,7 +136,7 @@ public class Watcher extends FileAlterationListenerAdaptor {
      * 注册监听器
      */
     private List<FileAlterationObserver> createObservers(String[] dirs) {
-        List<FileAlterationObserver> observers = Lists.newArrayList();
+        List<FileAlterationObserver> observers = new ArrayList<>();
         for (String dir : dirs) {
             // 过滤器，只监听class文件
             IOFileFilter directories = FileFilterUtils.and(
@@ -168,7 +163,7 @@ public class Watcher extends FileAlterationListenerAdaptor {
      * 重新加载变更的 Class
      */
     public void reloadClass() {
-        Set<String> fileSet = Sets.newHashSet();
+        Set<String> fileSet = new HashSet<>();
         for (Map.Entry<String, String> entry : fileCache.entrySet()) {
             String path = entry.getKey();
             String checksum = entry.getValue();

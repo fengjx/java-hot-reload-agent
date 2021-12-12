@@ -2,8 +2,8 @@ package com.fengjx.reload.watcher.worker;
 
 import com.fengjx.reload.common.AgentConfig;
 import com.fengjx.reload.common.AnsiLog;
+import com.fengjx.reload.common.consts.FileExtension;
 import com.fengjx.reload.common.utils.StrUtils;
-import com.fengjx.reload.core.consts.FileExtension;
 import com.fengjx.reload.watcher.Config;
 import com.sun.tools.attach.VirtualMachine;
 
