@@ -34,6 +34,28 @@ sh boot.sh watcher $pid $path1,$path2
 - pid: java 进程 id
 - path: 监听的文件根目录，支持监听 `.class` 和 `.java` 文件，多个目录用`,`分隔
 
+watcher 启动后，可以输入指令完成相关操作，输入 `h` 查看帮助
+
+```
+[INFO] input command
+h
+[INFO] r : 重新加载变更的 Class
+[INFO] exit : 退出进程
+[INFO] h,help,? : 使用帮助
+```
+
+#### `r` 
+
+重新加载所有变更
+
+#### `exit`
+
+退出进程
+
+#### `h`,`help`,`?`
+
+帮助说明
+
 ![](./doc/usage-watcher.gif)
 
 ### server 模式
