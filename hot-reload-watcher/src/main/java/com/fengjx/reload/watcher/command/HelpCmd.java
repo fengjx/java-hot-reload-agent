@@ -1,7 +1,7 @@
 package com.fengjx.reload.watcher.command;
 
 import com.fengjx.reload.common.AnsiLog;
-import com.google.common.base.Joiner;
+import com.fengjx.reload.common.utils.StrUtils;
 
 /**
  * 退出程序
@@ -23,7 +23,7 @@ public class HelpCmd implements Cmd {
     @Override
     public void handle() {
         CmdFactory.getAllCmd().forEach(item -> {
-            AnsiLog.info("{} : {}", Joiner.on(",").join(item.key()), item.help());
+            AnsiLog.info("{} : {}", StrUtils.join(item.key(), ","), item.help());
         });
     }
 

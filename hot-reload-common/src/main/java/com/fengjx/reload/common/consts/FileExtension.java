@@ -1,7 +1,10 @@
-package com.fengjx.reload.core.consts;
+package com.fengjx.reload.common.consts;
 
 import javax.tools.JavaFileObject;
 
+/**
+ * @author fengjianxin
+ */
 public interface FileExtension {
 
     String CLASS_FILE_EXTENSION = JavaFileObject.Kind.CLASS.extension;

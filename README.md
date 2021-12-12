@@ -18,7 +18,7 @@ java 热更新插件，无需重启 java 进程实现代码更新，提高开发
 
 ### 下载&安装（也可以用自行编译）
 ```bash
-version="beta-1.0.0"
+version="1.0.1-beta"
 # 从 github 下载
 wget https://github.com/fengjx/java-hot-reload-agent/releases/download/hot-reload-agent-all-${version}/hot-reload-agent-bin.zip
 # 解压都任意目录

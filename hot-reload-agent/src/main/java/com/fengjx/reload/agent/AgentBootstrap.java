@@ -1,5 +1,6 @@
 package com.fengjx.reload.agent;
 
+import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.utils.VersionUtils;
 
 import java.lang.instrument.Instrumentation;
@@ -16,14 +17,14 @@ public class AgentBootstrap {
      * 启动时加载
      */
     public static void premain(String args, Instrumentation inst) {
-        System.out.println("[premain] agent start: " + VersionUtils.getLatestVersion());
+        AnsiLog.info("premain agent: {}", VersionUtils.getLatestVersion());
     }
 
     /**
      * 运行时加载（attach）
      */
     public static void agentmain(String args, Instrumentation inst) {
-        System.out.println("[agentmain] agent start: " + VersionUtils.getLatestVersion());
+        AnsiLog.info("agentmain agent: " + VersionUtils.getLatestVersion());
         Handler handler = new ReloadClassHandler();
         handler.process(args, inst);
     }
