@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>hot-reload-server</title>
+    <link rel="stylesheet" href="/lib/element-ui/index.css">
+</head>
+<body>
+
+<div id="app">
+    {{msg}}
+</div>
+
+
+<script src="/lib/vue.min.js"></script>
+<script src="/lib/element-ui/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                msg: "hot-reload-server"
+            }
+        }
+    })
+
+</script>
+</body>
+</html>

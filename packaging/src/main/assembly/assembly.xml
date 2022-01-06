@@ -31,6 +31,19 @@
             <fileMode>0755</fileMode>
             <filtered>true</filtered>
         </file>
+
+        <file>
+            <source>../README.md</source>
+            <destName>README.md</destName>
+        </file>
     </files>
+
+    <fileSets>
+        <fileSet>
+            <directory>../doc</directory>
+            <outputDirectory>doc</outputDirectory>
+        </fileSet>
+    </fileSets>
+
 
 </assembly>

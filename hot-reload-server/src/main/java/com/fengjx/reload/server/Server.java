@@ -1,10 +1,14 @@
 package com.fengjx.reload.server;
 
+import com.fengjx.reload.server.api.ResponseKit;
 import com.fengjx.reload.server.api.Routers;
 import lombok.extern.slf4j.Slf4j;
 
 import static spark.Spark.*;
 
+/**
+ * @author fengjianxin
+ */
 @Slf4j
 public class Server {
 
@@ -16,9 +20,16 @@ public class Server {
     }
 
     private void initRouter() {
-        before((request, response) -> response.header("Server", "hot-reload-server"));
+        before((request, response) -> {
+            response.header("Server", "hot-reload-server");
+            response.type("application/json");
+        });
         get("/ping", (req, res) -> "hot-reload-server: pong");
-        post("/hotfix", Routers::hotfix);
+        post("/hotReload", Routers::hotReload);
+        exception(Exception.class, (exception, request, response) -> {
+            response.status(500);
+            ResponseKit.fail().setMsg(exception.getMessage());
+        });
     }
 
     private void destroy() {
@@ -26,8 +37,9 @@ public class Server {
     }
 
     public void start() {
-        port(8080);
+        port(ServerConfig.me().getPort());
         initThreadPool();
+        staticFileLocation("static");
         initRouter();
         Runtime.getRuntime().addShutdownHook(new Thread("server-shutdown-hook") {
             @Override

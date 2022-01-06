@@ -1,6 +1,7 @@
 package com.fengjx.reload.watcher;
 
 import com.fengjx.reload.common.AnsiLog;
+import com.fengjx.reload.watcher.config.Config;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -15,15 +16,14 @@ public class WatcherBootstrap {
     public static void main(String[] args) throws Exception {
         CommandLineParser defaultParser = new DefaultParser();
         Options options = new Options()
-                .addOption("path", "path", true, "hot reload class watch path")
-                .addOption("pid", "pid", true, "java process id");
+                .addOption("m", "mode", false, "start mode")
+                .addOption("c", "config", false, "start mode");
+
         CommandLine commandLine = defaultParser.parse(options, args);
-        String path = commandLine.getOptionValue("path");
-        String pid = commandLine.getOptionValue("pid");
-        Config.init(pid, path.split(","));
+        String mode = commandLine.getOptionValue("mode");
+        String config = commandLine.getOptionValue("config");
+        Config.init(mode, config);
         AnsiLog.info("start hot-reload-watcher-boot");
-        AnsiLog.info("pid: {}", pid);
-        AnsiLog.info("watchPath: {}", path);
         App.me().start();
     }
 

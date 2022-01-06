@@ -11,6 +11,11 @@ import java.util.Objects;
 public class StrUtils {
 
 
+    public static String[] trims(String[] src) {
+        return Arrays.stream(src).map(String::trim).toArray(String[]::new);
+    }
+
+
     public static boolean isEmpty(String str) {
         return str == null || str.length() == 0;
     }

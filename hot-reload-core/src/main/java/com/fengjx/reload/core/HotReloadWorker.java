@@ -137,7 +137,7 @@ public class HotReloadWorker {
     }
 
     @SuppressWarnings("rawtypes")
-    private static Class<?> findTargetClass(String className, Instrumentation instrumentation) {
+    protected static Class<?> findTargetClass(String className, Instrumentation instrumentation) {
         return CLASS_CACHE.computeIfAbsent(className, clazzName -> {
             Class[] allLoadedClasses = instrumentation.getAllLoadedClasses();
             return Arrays.stream(allLoadedClasses)

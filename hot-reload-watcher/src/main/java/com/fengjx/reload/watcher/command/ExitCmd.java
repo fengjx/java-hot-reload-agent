@@ -12,7 +12,7 @@ public class ExitCmd implements Cmd {
 
     @Override
     public String[] key() {
-        return new String[]{"exit"};
+        return new String[]{"exit", "q"};
     }
 
     @Override
