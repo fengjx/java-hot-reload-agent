@@ -1,35 +1,27 @@
 package com.fengjx.reload.server;
 
+import com.google.inject.Singleton;
 import lombok.Getter;
 
 /**
  * @author fengjianxin
  */
 @Getter
+@Singleton
 public class ServerConfig {
 
     private int port = 8080;
     private String tmpDir = "/temp/hot-reload-server/tmp";
     private String targetDir = "/temp/hot-reload-server/target";
 
-    private ServerConfig() {
+    public void init(int port) {
+        this.port = port;
     }
 
-    private static final ServerConfig INSTANCE = new ServerConfig();
-
-    public static void init(int port) {
-        INSTANCE.port = port;
+    public void init(int port, String tmpDir, String targetDir) {
+        this.port = port;
+        this.tmpDir = tmpDir;
+        this.targetDir = targetDir;
     }
-
-    public static void init(int port, String tmpDir, String targetDir) {
-        INSTANCE.port = port;
-        INSTANCE.tmpDir = tmpDir;
-        INSTANCE.targetDir = targetDir;
-    }
-
-    public static ServerConfig me() {
-        return INSTANCE;
-    }
-
 
 }
