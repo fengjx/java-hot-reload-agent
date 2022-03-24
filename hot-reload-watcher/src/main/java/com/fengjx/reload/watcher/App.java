@@ -2,21 +2,20 @@ package com.fengjx.reload.watcher;
 
 import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.watcher.command.CommandListener;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * @author fengjianxin
  */
+@Singleton
 public class App {
 
     private boolean running = false;
+    @Inject
     private Watcher watcher;
+    @Inject
     private CommandListener commandListener;
-
-    private static final App app = new App();
-
-    public static App me() {
-        return app;
-    }
 
     public void reload() {
         if (watcher == null) {
@@ -33,12 +32,10 @@ public class App {
     }
 
     private void startWatcher() {
-        watcher = new Watcher();
         watcher.start();
     }
 
     private void startCommandListener() {
-        commandListener = new CommandListener();
         commandListener.listen();
     }
 

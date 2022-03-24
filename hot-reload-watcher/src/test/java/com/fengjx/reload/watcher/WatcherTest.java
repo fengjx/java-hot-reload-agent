@@ -1,17 +1,15 @@
 package com.fengjx.reload.watcher;
 
-import com.fengjx.reload.watcher.config.Config;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class WatcherTest {
 
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        Path temp = Files.createTempDirectory("watcherTest");
-        Config.init("local", "");
+        final Injector injector = Guice.createInjector(new AppModule(""));
         new Watcher().start();
         Thread.sleep(1000 * 60 * 10);
     }

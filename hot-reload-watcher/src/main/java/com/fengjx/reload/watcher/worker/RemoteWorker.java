@@ -8,6 +8,7 @@ import com.fengjx.reload.common.utils.JsonUtils;
 import com.fengjx.reload.watcher.config.Config;
 import com.fengjx.reload.watcher.utils.HttpUtils;
 import com.google.gson.reflect.TypeToken;
+import com.google.inject.Inject;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -21,6 +22,9 @@ import java.util.Set;
  */
 public class RemoteWorker implements Worker {
 
+    @Inject
+    private Config config;
+
     @Override
     public void doReload(Set<String> files) {
         for (String file : files) {
@@ -32,7 +36,7 @@ public class RemoteWorker implements Worker {
      * 文件路径转类名
      */
     private String fileToClassName(String classFilePath) {
-        String[] watchPaths = Config.me().getWatchPaths();
+        String[] watchPaths = config.getWatchPaths();
         for (String watchPath : watchPaths) {
             if (classFilePath.startsWith(watchPath)) {
                 return ClassUtils.fileToClassName(watchPath, classFilePath);
@@ -43,12 +47,12 @@ public class RemoteWorker implements Worker {
 
     private synchronized void reloadClass(String className, String classFilePath) {
         AnsiLog.info("Reload class: {}", className);
-        int pid = Config.me().getServer().getPid();
+        int pid = config.getPid();
         if (pid == 0) {
             AnsiLog.warn("Pid is null");
             return;
         }
-        String host = Config.me().getServer().getHost();
+        String host = config.getServer().getHost();
         String extension = FileExtension.CLASS_FILE_EXT;
         if (classFilePath.endsWith(FileExtension.JAVA_FILE_EXTENSION)) {
             extension = FileExtension.JAVA_FILE_EXT;

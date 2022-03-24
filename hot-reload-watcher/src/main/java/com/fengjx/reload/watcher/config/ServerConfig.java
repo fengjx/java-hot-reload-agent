@@ -9,7 +9,5 @@ import lombok.Data;
 public class ServerConfig {
 
     private String host;
-    private int pid;
-
 
 }

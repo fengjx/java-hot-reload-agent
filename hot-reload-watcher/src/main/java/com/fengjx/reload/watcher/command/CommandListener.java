@@ -3,16 +3,21 @@ package com.fengjx.reload.watcher.command;
 import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.utils.ThreadUtils;
 import com.fengjx.reload.watcher.App;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import java.util.Scanner;
 
 /**
  * @author fengjianxin
  */
+@Singleton
 public class CommandListener implements Runnable {
 
-
-    private final App app = App.me();
+    @Inject
+    private App app;
+    @Inject
+    private CmdFactory cmdFactory;
 
     public void listen() {
         ThreadUtils.run("command-listener", true, this);
@@ -27,7 +32,7 @@ public class CommandListener implements Runnable {
                 continue;
             }
             String[] arr = line.split("\\s+");
-            Cmd cmd = CmdFactory.getCmd(arr[0]);
+            Cmd cmd = cmdFactory.getCmd(arr[0]);
             if (cmd != null) {
                 cmd.handle();
             }

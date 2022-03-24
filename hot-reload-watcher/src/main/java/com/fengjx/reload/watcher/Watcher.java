@@ -6,6 +6,8 @@ import com.fengjx.reload.common.utils.DigestUtils;
 import com.fengjx.reload.watcher.config.Config;
 import com.fengjx.reload.watcher.worker.Worker;
 import com.fengjx.reload.watcher.worker.WorkerFactory;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
@@ -25,12 +27,16 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author FengJianxin
  */
+@Singleton
 public class Watcher extends FileAlterationListenerAdaptor {
 
     private FileAlterationMonitor monitor;
     private final ConcurrentHashMap<String, String> oldVersion = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> fileCache = new ConcurrentHashMap<>();
     private final Worker worker;
+
+    @Inject
+    private Config config;
 
     public Watcher() {
         this.worker = WorkerFactory.createWorker();
@@ -106,7 +112,7 @@ public class Watcher extends FileAlterationListenerAdaptor {
 
     public void start() {
         AnsiLog.debug("watcher start");
-        String[] watchPaths = Config.me().getWatchPaths();
+        String[] watchPaths = config.getWatchPaths();
         try {
             loadOldVersion(watchPaths);
             // 轮询间隔 3 秒

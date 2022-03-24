@@ -1,5 +1,8 @@
 package com.fengjx.reload.watcher.command;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -8,30 +11,29 @@ import java.util.Set;
 /**
  * @author fengjianxin
  */
+@Singleton
 public class CmdFactory {
 
 
-    private static final Map<String, Cmd> CMD_MAP = new LinkedHashMap<>();
+    private final Map<String, Cmd> cmdMap = new LinkedHashMap<>();
 
-    static {
-        create(new ReloadCmd(), new ExitCmd(), new HelpCmd());
-    }
-
-    private static void create(Cmd... cmds) {
+    @Inject
+    public CmdFactory(Set<Cmd> cmds) {
         for (Cmd cmd : cmds) {
             for (String key : cmd.key()) {
-                CMD_MAP.put(key, cmd);
+                cmdMap.put(key, cmd);
             }
         }
     }
 
-    public static Cmd getCmd(String key) {
-        return CMD_MAP.get(key);
+
+    public Cmd getCmd(String key) {
+        return cmdMap.get(key);
     }
 
 
-    public static Set<Cmd> getAllCmd() {
-        return new LinkedHashSet<>(CMD_MAP.values());
+    public Set<Cmd> getAllCmd() {
+        return new LinkedHashSet<>(cmdMap.values());
     }
 
 }

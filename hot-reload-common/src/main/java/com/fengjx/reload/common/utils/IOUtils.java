@@ -150,4 +150,15 @@ public class IOUtils {
         }
 
     }
+
+    public static InputStream toInputStream(String filePath) {
+        InputStream in;
+        try {
+            return new FileInputStream(filePath);
+        } catch (FileNotFoundException e) {
+            // ignore
+        }
+        return FileUtils.class.getClassLoader().getResourceAsStream(filePath);
+    }
+
 }

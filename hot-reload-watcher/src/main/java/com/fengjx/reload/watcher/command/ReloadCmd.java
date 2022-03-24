@@ -2,6 +2,7 @@ package com.fengjx.reload.watcher.command;
 
 import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.watcher.App;
+import com.google.inject.Inject;
 
 /**
  * 加载变更 Class
@@ -9,6 +10,9 @@ import com.fengjx.reload.watcher.App;
  * @author fengjianxin
  */
 public class ReloadCmd implements Cmd {
+
+    @Inject
+    private App app;
 
     @Override
     public String[] key() {
@@ -23,7 +27,7 @@ public class ReloadCmd implements Cmd {
     @Override
     public void handle() {
         AnsiLog.info("do reload class");
-        App.me().reload();
+        app.reload();
     }
 
 }

@@ -5,6 +5,7 @@ import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.jvm.ClassUtils;
 import com.fengjx.reload.common.jvm.VMUtils;
 import com.fengjx.reload.watcher.config.Config;
+import com.google.inject.Inject;
 
 import java.util.Set;
 
@@ -13,6 +14,9 @@ import java.util.Set;
  * @since 2021-12-05
  */
 public class LocalWorker implements Worker {
+
+    @Inject
+    private Config config;
 
     @Override
     public void doReload(Set<String> files) {
@@ -25,7 +29,7 @@ public class LocalWorker implements Worker {
      * 文件路径转类名
      */
     private String getClassName(String classFilePath) {
-        String[] watchPaths = Config.me().getWatchPaths();
+        String[] watchPaths = config.getWatchPaths();
         for (String watchPath : watchPaths) {
             if (classFilePath.startsWith(watchPath)) {
                 return ClassUtils.fileToClassName(watchPath, classFilePath);
@@ -36,7 +40,7 @@ public class LocalWorker implements Worker {
 
     private synchronized void reloadClass(String className, String classFilePath) {
         AnsiLog.info("Reload class: {}", className);
-        int pid = Config.me().getLocal().getPid();
+        int pid = config.getPid();
         if (pid == 0) {
             AnsiLog.warn("Pid is null");
             return;
