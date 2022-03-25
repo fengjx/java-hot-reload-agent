@@ -26,7 +26,7 @@ public class CommandListener implements Runnable {
     @Override
     public void run() {
         while (app.isRunning()) {
-            AnsiLog.info("input command");
+            AnsiLog.info("输入指令，'h' 查看帮助");
             String line = new Scanner(System.in).nextLine();
             if (line.trim().isEmpty()) {
                 continue;

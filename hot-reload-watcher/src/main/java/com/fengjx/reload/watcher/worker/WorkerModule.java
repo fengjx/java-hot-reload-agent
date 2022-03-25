@@ -1,7 +1,8 @@
 package com.fengjx.reload.watcher.worker;
 
+import com.fengjx.reload.watcher.consts.WorkerConst;
 import com.google.inject.AbstractModule;
-import com.google.inject.name.Names;
+import com.google.inject.multibindings.MapBinder;
 
 /**
  * @author FengJianxin
@@ -12,8 +13,9 @@ public class WorkerModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(Worker.class).annotatedWith(Names.named("localWorker")).to(LocalWorker.class);
-        bind(Worker.class).annotatedWith(Names.named("remoteWorker")).to(RemoteWorker.class);
+        MapBinder<String, Worker> mapbinder = MapBinder.newMapBinder(binder(), String.class, Worker.class);
+        mapbinder.addBinding(WorkerConst.localWorkerName).to(LocalWorker.class);
+        mapbinder.addBinding(WorkerConst.remoteWorkerName).to(RemoteWorker.class);
     }
 
 

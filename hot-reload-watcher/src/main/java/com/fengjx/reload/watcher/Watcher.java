@@ -4,7 +4,6 @@ import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.consts.FileExtension;
 import com.fengjx.reload.common.utils.DigestUtils;
 import com.fengjx.reload.watcher.config.Config;
-import com.fengjx.reload.watcher.worker.Worker;
 import com.fengjx.reload.watcher.worker.WorkerFactory;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -33,14 +32,11 @@ public class Watcher extends FileAlterationListenerAdaptor {
     private FileAlterationMonitor monitor;
     private final ConcurrentHashMap<String, String> oldVersion = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> fileCache = new ConcurrentHashMap<>();
-    private final Worker worker;
+    @Inject
+    private WorkerFactory workerFactory;
 
     @Inject
     private Config config;
-
-    public Watcher() {
-        this.worker = WorkerFactory.createWorker();
-    }
 
     private void loadOldVersion(String[] watchPaths) throws IOException, NoSuchAlgorithmException {
         for (String watchPath : watchPaths) {
@@ -182,7 +178,7 @@ public class Watcher extends FileAlterationListenerAdaptor {
             AnsiLog.info("No change files");
             return;
         }
-        worker.doReload(fileSet);
+        workerFactory.getWorker().doReload(fileSet);
     }
 
     private boolean check(String path, String checksum) {

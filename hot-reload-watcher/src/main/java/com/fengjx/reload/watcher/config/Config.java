@@ -1,5 +1,6 @@
 package com.fengjx.reload.watcher.config;
 
+import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.utils.IOUtils;
 import com.fengjx.reload.common.utils.JsonUtils;
 import com.fengjx.reload.common.utils.PropUtils;
@@ -50,7 +51,12 @@ public class Config {
             server.setHost(serverHost);
         }
         config.setServer(server);
+        AnsiLog.info("config: {}", JsonUtils.toPrettyJson(config));
         return config;
+    }
+
+    public boolean isLocalMode() {
+        return "local".equalsIgnoreCase(getMode());
     }
 
 }

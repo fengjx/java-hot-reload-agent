@@ -10,7 +10,8 @@ public class WatcherTest {
 
     public static void main(String[] args) throws InterruptedException, IOException {
         final Injector injector = Guice.createInjector(new AppModule(""));
-        new Watcher().start();
+        Watcher watcher = injector.getInstance(Watcher.class);
+        watcher.start();
         Thread.sleep(1000 * 60 * 10);
     }
 
