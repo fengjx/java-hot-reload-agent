@@ -1,6 +1,7 @@
 package com.fengjx.reload.server;
 
 import com.fengjx.reload.common.utils.PropUtils;
+import com.fengjx.reload.server.api.ResponseKit;
 import com.fengjx.reload.server.api.Router;
 import com.google.inject.Inject;
 import io.javalin.Javalin;
@@ -32,6 +33,10 @@ public class JavalinServer implements Server {
         app.before(ctx -> {
             ctx.res.addHeader("Server", "hot-reload-server");
             ctx.res.setContentType("application/json");
+        });
+        app.exception(Exception.class, (e, ctx) -> {
+            log.error("server error", e);
+            ctx.json(ResponseKit.fail(e.getMessage()));
         });
         app.get("/ping", ctx -> {
             ctx.result("pong");

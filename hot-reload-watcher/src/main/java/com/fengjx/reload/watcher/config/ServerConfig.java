@@ -8,6 +8,12 @@ import lombok.Data;
 @Data
 public class ServerConfig {
 
+    private static final String PROTOCOL = "http://";
+
     private String host;
+
+    public String getHotReloadApi() {
+        return PROTOCOL + host + "/hotReload";
+    }
 
 }

@@ -1,10 +1,7 @@
 {
-  "mode": "server",
+  "mode": "local",
   "watchPaths": [
     "/Users/fengjianxin/workspaces/git/my-github/java-hot-reload-agent/example/spring-boot-demo/src/main/java"
   ],
   "pid": 0,
-  "server": {
-    "host": "localhost:8000"
-  }
 }

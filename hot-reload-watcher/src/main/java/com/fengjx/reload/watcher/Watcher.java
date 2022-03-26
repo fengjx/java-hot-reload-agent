@@ -34,11 +34,11 @@ public class Watcher extends FileAlterationListenerAdaptor {
     private final ConcurrentHashMap<String, String> fileCache = new ConcurrentHashMap<>();
     @Inject
     private WorkerFactory workerFactory;
-
     @Inject
     private Config config;
 
     private void loadOldVersion(String[] watchPaths) throws IOException, NoSuchAlgorithmException {
+        // 记录当前文件版本，checksum 作为版本标识
         for (String watchPath : watchPaths) {
             Collection<File> files = FileUtils.listFiles(new File(watchPath), new String[]{
                     FileExtension.CLASS_FILE_EXT,

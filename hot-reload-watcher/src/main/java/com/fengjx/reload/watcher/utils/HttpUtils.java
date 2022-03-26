@@ -1,5 +1,6 @@
 package com.fengjx.reload.watcher.utils;
 
+import com.fengjx.reload.common.AnsiLog;
 import lombok.experimental.UtilityClass;
 import okhttp3.*;
 
@@ -53,7 +54,7 @@ public class HttpUtils {
     private static String request(Request request) {
         try (Response response = CLIENT.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                return "";
+                AnsiLog.error(response.toString());
             }
             return response.body() == null ? "" : response.body().string();
         } catch (IOException e) {

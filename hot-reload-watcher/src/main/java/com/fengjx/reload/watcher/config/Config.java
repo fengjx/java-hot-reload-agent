@@ -51,12 +51,19 @@ public class Config {
             server.setHost(serverHost);
         }
         config.setServer(server);
+        check(config);
         AnsiLog.info("config: {}", JsonUtils.toPrettyJson(config));
         return config;
     }
 
     public boolean isLocalMode() {
-        return "local".equalsIgnoreCase(getMode());
+        return ModeEnum.LOCAL.getMode().equalsIgnoreCase(getMode());
     }
 
+    private static void check(Config config) {
+        ModeEnum modeEnum = ModeEnum.of(config.getMode());
+        if (modeEnum == null) {
+            throw new IllegalArgumentException("mode unknown: " + config.getMode());
+        }
+    }
 }

@@ -1,7 +1,7 @@
 package com.fengjx.reload.watcher.worker;
 
 import com.fengjx.reload.watcher.config.Config;
-import com.fengjx.reload.watcher.consts.WorkerConst;
+import com.fengjx.reload.watcher.config.ModeEnum;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -21,9 +21,9 @@ public class WorkerFactory {
 
     public Worker getWorker() {
         if (config.isLocalMode()) {
-            return workerMap.get(WorkerConst.localWorkerName);
+            return workerMap.get(ModeEnum.LOCAL.getWorkerName());
         }
-        return workerMap.get(WorkerConst.remoteWorkerName);
+        return workerMap.get(ModeEnum.SERVER.getWorkerName());
     }
 
 

@@ -2,6 +2,7 @@ package com.fengjx.reload.server.api;
 
 import com.fengjx.reload.common.consts.FileExtension;
 import com.fengjx.reload.common.jvm.ClassUtils;
+import com.fengjx.reload.common.utils.FileUtils;
 import com.fengjx.reload.common.utils.IOUtils;
 import com.fengjx.reload.server.ServerConfig;
 import com.fengjx.reload.server.service.HotReloadService;
@@ -12,8 +13,7 @@ import io.javalin.http.Context;
 import io.javalin.http.UploadedFile;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 
 /**
  * @author FengJianxin
@@ -47,14 +47,26 @@ public class HotReloadApi implements Router {
             return;
         }
         try (InputStream is = uploadedFile.getContent()) {
-            IOUtils.copy(is, new FileOutputStream(targetFilePath));
+            copyFile(is, targetFilePath);
             hotReloadService.reloadClass(pid, className, targetFilePath);
+            ctx.json(ResponseKit.ok());
         } catch (Exception e) {
             log.error("hotReload error", e);
             ctx.status(500);
             ctx.json(ResponseKit.fail());
+        } finally {
+            FileUtils.delete(targetFilePath);
         }
-        ctx.json(ResponseKit.ok());
+    }
+
+    private void copyFile(InputStream is, String targetFilePath) throws IOException {
+        File file = new File(targetFilePath);
+        File dir = file.getParentFile();
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        FileOutputStream fos = new FileOutputStream(file);
+        IOUtils.copy(is, fos);
     }
 
 

@@ -8,8 +8,15 @@ import java.io.*;
  */
 public class FileUtils {
 
+    /**
+     * 系统临时文件目录
+     */
+    public static String getTempDirectoryStr() {
+        return System.getProperty("java.io.tmpdir");
+    }
+
     public static File getTempDirectory() {
-        return new File(System.getProperty("java.io.tmpdir"));
+        return new File(getTempDirectoryStr());
     }
 
     /**
@@ -141,4 +148,16 @@ public class FileUtils {
             IOUtils.close(in);
         }
     }
+
+    /**
+     * 删除文件
+     *
+     * @param filePath
+     */
+    public static void delete(final String filePath) {
+        File file = new File(filePath);
+        file.deleteOnExit();
+    }
+
+
 }

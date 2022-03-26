@@ -24,6 +24,7 @@
 package com.fengjx.reload.core;
 
 import com.fengjx.reload.common.consts.FileExtension;
+import com.fengjx.reload.common.utils.FileUtils;
 import com.fengjx.reload.core.dynamiccompiler.DynamicCompiler;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,7 +43,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
- *
  * @author fengjianxin
  */
 @Slf4j
@@ -95,7 +95,7 @@ public class HotReloadWorker {
         Map<String, byte[]> classNameToByteCodeMap = dynamicCompiler.buildByteCodes();
         classNameToByteCodeMap.forEach((clazzName, bytes) -> {
             try {
-                Files.write(Paths.get("/tmp/replace_" + clazzName), bytes);
+                Files.write(Paths.get(FileUtils.getTempDirectoryStr(), "replace_" + clazzName), bytes);
                 doReloadClassFile(instrumentation, clazzName, bytes);
             } catch (Exception e) {
                 log.error("Class " + clazzName + " reload error ", e);

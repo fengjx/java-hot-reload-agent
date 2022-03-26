@@ -32,7 +32,7 @@ public class ResponseKit {
     public static <T> Result<T> fail(T data) {
         Result<T> res = new Result<>();
         res.setCode(500);
-        res.setMsg("ok");
+        res.setMsg("fail");
         res.setData(data);
         return res;
     }

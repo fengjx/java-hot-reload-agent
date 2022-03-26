@@ -1,7 +1,10 @@
 package com.fengjx.reload.server;
 
+import com.fengjx.reload.common.utils.FileUtils;
 import com.google.inject.Singleton;
 import lombok.Getter;
+
+import java.nio.file.Paths;
 
 /**
  * @author fengjianxin
@@ -11,16 +14,15 @@ import lombok.Getter;
 public class ServerConfig {
 
     private int port = 8080;
-    private String tmpDir = "/temp/hot-reload-server/tmp";
-    private String targetDir = "/temp/hot-reload-server/target";
+    private String targetDir;
 
     public void init(int port) {
-        this.port = port;
+        String targetDir = Paths.get(FileUtils.getTempDirectoryStr(), "target").toString();
+        init(port, targetDir);
     }
 
-    public void init(int port, String tmpDir, String targetDir) {
+    public void init(int port, String targetDir) {
         this.port = port;
-        this.tmpDir = tmpDir;
         this.targetDir = targetDir;
     }
 

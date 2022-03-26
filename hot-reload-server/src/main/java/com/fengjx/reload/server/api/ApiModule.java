@@ -13,6 +13,7 @@ public class ApiModule extends AbstractModule {
     protected void configure() {
         Multibinder<Router> uriBinder = Multibinder.newSetBinder(binder(), Router.class);
         uriBinder.addBinding().to(HotReloadApi.class);
+        uriBinder.addBinding().to(ProcessApi.class);
     }
 
 }
