@@ -78,30 +78,26 @@ public class Watcher extends FileAlterationListenerAdaptor {
         removeCache(file);
     }
 
-    private void addCache(File file) {
-        synchronized (this) {
-            try {
-                String absolutePath = file.getAbsolutePath();
-                String checksum = DigestUtils.checksum(file);
-                String oldChecksum = fileCache.get(absolutePath);
-                if (checksum.equals(oldChecksum)) {
-                    return;
-                }
-                fileCache.put(absolutePath, checksum);
-                AnsiLog.info("add watch file cache: {}", absolutePath);
-            } catch (Exception e) {
-                AnsiLog.error("add watch file cache error", e);
+    private synchronized void addCache(File file) {
+        try {
+            String absolutePath = file.getAbsolutePath();
+            String checksum = DigestUtils.checksum(file);
+            String oldChecksum = fileCache.get(absolutePath);
+            if (checksum.equals(oldChecksum)) {
+                return;
             }
+            fileCache.put(absolutePath, checksum);
+            AnsiLog.info("add watch file cache: {}", absolutePath);
+        } catch (Exception e) {
+            AnsiLog.error("add watch file cache error", e);
         }
     }
 
-    private void removeCache(File file) {
-        synchronized (this) {
-            String absolutePath = file.getAbsolutePath();
-            fileCache.remove(absolutePath);
-            oldVersion.remove(absolutePath);
-            AnsiLog.info("remove watch file cache: {}", absolutePath);
-        }
+    private synchronized void removeCache(File file) {
+        String absolutePath = file.getAbsolutePath();
+        fileCache.remove(absolutePath);
+        oldVersion.remove(absolutePath);
+        AnsiLog.info("remove watch file cache: {}", absolutePath);
     }
 
 
@@ -162,7 +158,8 @@ public class Watcher extends FileAlterationListenerAdaptor {
     /**
      * 重新加载变更的 Class
      */
-    public void reloadClass() {
+    public synchronized void reloadClass() {
+        AnsiLog.info("start reload class");
         Set<String> fileSet = new HashSet<>();
         for (Map.Entry<String, String> entry : fileCache.entrySet()) {
             String path = entry.getKey();

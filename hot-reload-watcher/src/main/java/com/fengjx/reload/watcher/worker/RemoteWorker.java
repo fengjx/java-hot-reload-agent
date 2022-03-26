@@ -37,7 +37,7 @@ public class RemoteWorker implements Worker {
      *
      * @param targetFilePath
      */
-    private synchronized void reloadClass(String targetFilePath) {
+    private void reloadClass(String targetFilePath) {
         AnsiLog.info("reload class: {}", targetFilePath);
         int pid = config.getPid();
         if (pid == 0) {

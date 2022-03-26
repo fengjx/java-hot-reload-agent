@@ -26,15 +26,20 @@ public class CommandListener implements Runnable {
     @Override
     public void run() {
         while (app.isRunning()) {
-            AnsiLog.info("输入指令，'h' 查看帮助");
-            String line = new Scanner(System.in).nextLine();
-            if (line.trim().isEmpty()) {
-                continue;
-            }
-            String[] arr = line.split("\\s+");
-            Cmd cmd = cmdFactory.getCmd(arr[0]);
-            if (cmd != null) {
-                cmd.handle();
+            try {
+                AnsiLog.info("输入指令，'h' 查看帮助");
+                String line = new Scanner(System.in).nextLine();
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                String[] arr = line.split("\\s+");
+                Cmd cmd = cmdFactory.getCmd(arr[0]);
+                if (cmd != null) {
+                    cmd.handle();
+                }
+            } catch (Exception e) {
+                AnsiLog.error("cmd exec error: {}", e.getMessage());
+                e.printStackTrace();
             }
         }
         AnsiLog.info("CommandListener stop");

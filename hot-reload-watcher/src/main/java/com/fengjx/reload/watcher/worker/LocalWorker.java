@@ -29,7 +29,7 @@ public class LocalWorker implements Worker {
      *
      * @param targetFilePath .class or .java
      */
-    private synchronized void reloadClass(String targetFilePath) {
+    private void reloadClass(String targetFilePath) {
         AnsiLog.info("reload class: {}", targetFilePath);
         int pid = config.getPid();
         if (pid == 0) {

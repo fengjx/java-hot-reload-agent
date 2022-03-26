@@ -24,7 +24,6 @@
 package com.fengjx.reload.core;
 
 import com.fengjx.reload.common.consts.FileExtension;
-import com.fengjx.reload.common.utils.FileUtils;
 import com.fengjx.reload.common.utils.IOUtils;
 import com.fengjx.reload.core.dynamiccompiler.DynamicCompiler;
 import com.fengjx.reload.core.util.ClassByteCodeUtils;
@@ -98,7 +97,6 @@ public class HotReloadWorker {
         Map<String, byte[]> classNameToByteCodeMap = dynamicCompiler.buildByteCodes();
         classNameToByteCodeMap.forEach((clazzName, bytes) -> {
             try {
-                Files.write(Paths.get(FileUtils.getTempDirectoryStr(), "replace_" + clazzName), bytes);
                 doReloadClassFile(instrumentation, clazzName, bytes);
             } catch (Exception e) {
                 log.error("Class " + clazzName + " reload error ", e);
