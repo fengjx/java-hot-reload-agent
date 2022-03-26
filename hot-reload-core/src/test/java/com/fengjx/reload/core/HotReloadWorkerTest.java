@@ -12,7 +12,7 @@ public class HotReloadWorkerTest {
 
     @Test
     public void loop() throws InterruptedException {
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < 10; i++) {
             Thread.sleep(1000);
             invoke();
         }

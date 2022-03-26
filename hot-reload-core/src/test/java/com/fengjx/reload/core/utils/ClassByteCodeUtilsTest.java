@@ -1,6 +1,7 @@
 package com.fengjx.reload.core.utils;
 
 import com.fengjx.reload.core.util.ClassByteCodeUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class ClassByteCodeUtilsTest {
@@ -49,7 +50,9 @@ public class ClassByteCodeUtilsTest {
                 "    }\n" +
                 "\n" +
                 "}";
-        System.out.println(ClassByteCodeUtils.getClassNameFromSourceCode(fileContent));
+        String className = ClassByteCodeUtils.getClassNameFromSourceCode(fileContent);
+        System.out.println(className);
+        Assert.assertEquals("com.fengjx.reload.core.utils.ClassByteCodeUtilsTest", className);
     }
 
 }
