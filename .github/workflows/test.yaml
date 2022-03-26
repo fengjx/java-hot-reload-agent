@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [8, 9, 10, 11]
+        java: [8, 9, 10]
     steps:
       - uses: actions/checkout@v2
       - name: Setup java
@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [12, 13, 14, 17]
+        java: [11, 12, 13, 14, 17]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 1.8
@@ -40,4 +40,4 @@ jobs:
       - name: Build with Maven
         run: |
           source ~/.testenv
-          mvn -Dmaven.compiler.fork=true -Dmaven.compiler.executable=$JAVA8_HOME/bin/javac -DJAVA8_HOME=$JAVA8_HOME clean package -P full
+          mvn -Dmaven.compiler.fork=true -Dmaven.compiler.executable=$JAVA8_HOME/bin/javac -DJAVA8_HOME=$JAVA8_HOME clean package -P jdk_tools
