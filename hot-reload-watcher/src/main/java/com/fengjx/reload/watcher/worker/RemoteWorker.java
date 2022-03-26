@@ -2,7 +2,6 @@ package com.fengjx.reload.watcher.worker;
 
 import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.consts.FileExtension;
-import com.fengjx.reload.common.jvm.ClassUtils;
 import com.fengjx.reload.common.proto.Result;
 import com.fengjx.reload.common.utils.JsonUtils;
 import com.fengjx.reload.watcher.config.Config;
@@ -29,25 +28,17 @@ public class RemoteWorker implements Worker {
     @Override
     public void doReload(Set<String> files) {
         for (String file : files) {
-            reloadClass(fileToClassName(file), file);
+            reloadClass(file);
         }
     }
 
     /**
-     * 文件路径转类名
+     * 向远程 server 提交需要重新加载的文件
+     *
+     * @param targetFilePath
      */
-    private String fileToClassName(String classFilePath) {
-        String[] watchPaths = config.getWatchPaths();
-        for (String watchPath : watchPaths) {
-            if (classFilePath.startsWith(watchPath)) {
-                return ClassUtils.fileToClassName(watchPath, classFilePath);
-            }
-        }
-        throw new RuntimeException("Invalid file path: " + classFilePath);
-    }
-
-    private synchronized void reloadClass(String className, String filePath) {
-        AnsiLog.info("Reload class: {}", className);
+    private synchronized void reloadClass(String targetFilePath) {
+        AnsiLog.info("reload class: {}", targetFilePath);
         int pid = config.getPid();
         if (pid == 0) {
             AnsiLog.warn("Pid is null");
@@ -55,21 +46,21 @@ public class RemoteWorker implements Worker {
         }
         ServerConfig server = config.getServer();
         String extension = FileExtension.CLASS_FILE_EXT;
-        if (filePath.endsWith(FileExtension.JAVA_FILE_EXTENSION)) {
+        if (targetFilePath.endsWith(FileExtension.JAVA_FILE_EXTENSION)) {
             extension = FileExtension.JAVA_FILE_EXT;
         }
         Map<String, String> params = new HashMap<>(8);
         params.put("pid", String.valueOf(pid));
-        params.put("className", className);
         params.put("extension", extension);
-        String res = HttpUtils.upload(server.getHotReloadApi(), new File(filePath), params);
+        File targetFile = new File(targetFilePath);
+        String res = HttpUtils.upload(server.getHotReloadApi(), targetFile, params);
         Type type = new TypeToken<Result<Map<String, Object>>>() {
         }.getType();
         Result<Map<String, Object>> result = JsonUtils.fromJson(res, type);
         if (result.getCode() == 200) {
-            AnsiLog.info("Reload class[{}] success", className);
+            AnsiLog.info("reload [{}] success", targetFile.getName());
         } else {
-            AnsiLog.error("Reload class[{}] error: {}", className, res);
+            AnsiLog.error("reload [{}] error: {}", targetFile.getName(), res);
         }
     }
 

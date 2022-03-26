@@ -66,7 +66,6 @@ public class Watcher extends FileAlterationListenerAdaptor {
      */
     @Override
     public void onFileChange(File file) {
-        AnsiLog.info("modify: {}", file.getAbsolutePath());
         addCache(file);
     }
 

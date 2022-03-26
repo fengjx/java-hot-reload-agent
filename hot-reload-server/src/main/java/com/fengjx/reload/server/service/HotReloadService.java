@@ -14,14 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 @Singleton
 public class HotReloadService {
 
-    public void reloadClass(String pid, String className, String classFilePath) throws Exception {
-        log.info("reload class: {}", className);
+    public void reloadClass(String pid, String targetFilePath) throws Exception {
+        log.info("reload class: {}, {}", pid, targetFilePath);
         if (StrUtils.isBlank(pid)) {
             log.warn("pid is null");
             return;
         }
         log.debug("load agent jar: {}", AgentConfig.getAgentJar());
-        VMUtils.reloadClassForLocalVM(pid, className, classFilePath);
+        VMUtils.reloadClassForLocalVM(pid, targetFilePath);
     }
 
 

@@ -2,7 +2,6 @@ package com.fengjx.reload.watcher.worker;
 
 import com.fengjx.reload.common.AgentConfig;
 import com.fengjx.reload.common.AnsiLog;
-import com.fengjx.reload.common.jvm.ClassUtils;
 import com.fengjx.reload.common.jvm.VMUtils;
 import com.fengjx.reload.watcher.config.Config;
 import com.google.inject.Inject;
@@ -21,36 +20,28 @@ public class LocalWorker implements Worker {
     @Override
     public void doReload(Set<String> files) {
         for (String file : files) {
-            reloadClass(getClassName(file), file);
+            reloadClass(file);
         }
     }
 
     /**
-     * 文件路径转类名
+     * 重新加载 class 到本地 jvm
+     *
+     * @param targetFilePath .class or .java
      */
-    private String getClassName(String classFilePath) {
-        String[] watchPaths = config.getWatchPaths();
-        for (String watchPath : watchPaths) {
-            if (classFilePath.startsWith(watchPath)) {
-                return ClassUtils.fileToClassName(watchPath, classFilePath);
-            }
-        }
-        throw new RuntimeException("Invalid file path: " + classFilePath);
-    }
-
-    private synchronized void reloadClass(String className, String classFilePath) {
-        AnsiLog.info("Reload class: {}", className);
+    private synchronized void reloadClass(String targetFilePath) {
+        AnsiLog.info("reload class: {}", targetFilePath);
         int pid = config.getPid();
         if (pid == 0) {
-            AnsiLog.warn("Pid is null");
+            AnsiLog.warn("pid is null");
             return;
         }
-        AnsiLog.debug("Load agent jar: {}", AgentConfig.getAgentJar());
+        AnsiLog.debug("load agent jar: {}", AgentConfig.getAgentJar());
         try {
-            VMUtils.reloadClassForLocalVM(String.valueOf(pid), className, classFilePath);
-            AnsiLog.info("Reload class[{}] success", className);
+            VMUtils.reloadClassForLocalVM(String.valueOf(pid), targetFilePath);
+            AnsiLog.info("reload class[{}] success", targetFilePath);
         } catch (Exception e) {
-            AnsiLog.error("Reload class[{}] error", className);
+            AnsiLog.error("reload class[{}] error", targetFilePath);
             AnsiLog.error(e);
         }
     }

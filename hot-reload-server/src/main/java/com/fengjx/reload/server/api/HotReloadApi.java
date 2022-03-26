@@ -1,9 +1,8 @@
 package com.fengjx.reload.server.api;
 
-import com.fengjx.reload.common.consts.FileExtension;
-import com.fengjx.reload.common.jvm.ClassUtils;
 import com.fengjx.reload.common.utils.FileUtils;
 import com.fengjx.reload.common.utils.IOUtils;
+import com.fengjx.reload.common.utils.StrUtils;
 import com.fengjx.reload.server.ServerConfig;
 import com.fengjx.reload.server.service.HotReloadService;
 import com.google.inject.Inject;
@@ -13,7 +12,11 @@ import io.javalin.http.Context;
 import io.javalin.http.UploadedFile;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
 
 /**
  * @author FengJianxin
@@ -34,28 +37,25 @@ public class HotReloadApi implements Router {
     }
 
     public void hotReload(Context ctx) {
-        String targetDir = config.getTargetDir();
         String pid = ctx.formParam("pid");
-        String className = ctx.formParam("className");
         String extension = ctx.formParam("extension");
-        String targetFilePath = ClassUtils.classNameToPath(targetDir, className, FileExtension.CLASS_FILE_EXT.equals(extension));
-        log.info("reload class: {}, {}", pid, className);
-
+        String targetFilePath = buildFilePath(pid, extension);
         UploadedFile uploadedFile = ctx.uploadedFile("file");
         if (uploadedFile == null) {
-            ctx.json(ResponseKit.fail("file is empty"));
+            ctx.json(ResponseKit.fail().setMsg("file is empty"));
             return;
         }
         try (InputStream is = uploadedFile.getContent()) {
             copyFile(is, targetFilePath);
-            hotReloadService.reloadClass(pid, className, targetFilePath);
+            hotReloadService.reloadClass(pid, targetFilePath);
             ctx.json(ResponseKit.ok());
         } catch (Exception e) {
             log.error("hotReload error", e);
             ctx.status(500);
-            ctx.json(ResponseKit.fail());
+            ctx.json(ResponseKit.fail().setMsg(e.getMessage()));
         } finally {
             FileUtils.delete(targetFilePath);
+            log.info("delete file: {}", targetFilePath);
         }
     }
 
@@ -69,5 +69,9 @@ public class HotReloadApi implements Router {
         IOUtils.copy(is, fos);
     }
 
+    private String buildFilePath(String pid, String extension) {
+        String targetDir = config.getTargetDir();
+        return Paths.get(targetDir, pid, StrUtils.randomString(10), "replace_" + StrUtils.randomString(4) + "." + extension).toString();
+    }
 
 }

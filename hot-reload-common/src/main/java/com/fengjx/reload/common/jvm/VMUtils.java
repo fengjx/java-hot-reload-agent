@@ -19,10 +19,9 @@ public class VMUtils {
     /**
      * 加载 class 到本地 jvm
      * @param pid 进程号
-     * @param className 全路径类名
      * @param targetFilePath class 文件物理路径
      */
-    public static void reloadClassForLocalVM(String pid, String className, String targetFilePath) throws
+    public static void reloadClassForLocalVM(String pid, String targetFilePath) throws
             IOException, AttachNotSupportedException, AgentLoadException, AgentInitializationException {
         if (StrUtils.isBlank(pid)) {
             return;
@@ -30,7 +29,7 @@ public class VMUtils {
         VirtualMachine attach = null;
         try {
             attach = VirtualMachine.attach(pid);
-            attach.loadAgent(AgentConfig.getAgentJar(), className + "," + targetFilePath);
+            attach.loadAgent(AgentConfig.getAgentJar(), targetFilePath);
         } finally {
             if (attach != null) {
                 attach.detach();

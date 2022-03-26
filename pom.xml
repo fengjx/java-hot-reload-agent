@@ -74,6 +74,17 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <encoding>${encoding}</encoding>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <!-- 显示编译告警信息-->
+                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
@@ -129,9 +140,9 @@
     <profiles>
         <profile>
             <!-- ci test -->
-            <id>jdk12</id>
+            <id>jdk_tools</id>
             <activation>
-                <jdk>[12,)</jdk>
+                <jdk>[1.8,)</jdk>
                 <property>
                     <name>JAVA8_HOME</name>
                 </property>
@@ -149,6 +160,15 @@
 
         <profile>
             <id>full</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                    <version>1.6.0</version>
+                    <scope>system</scope>
+                    <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>

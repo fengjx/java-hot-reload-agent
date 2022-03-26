@@ -23,11 +23,8 @@ public class ReloadClassHandler implements Handler {
         if (args == null) {
             throw new IllegalArgumentException("Agent args is null");
         }
-        String[] splits = args.split(",");
-        if (splits.length < 2) {
-            throw new IllegalArgumentException(args);
-        }
         try {
+            final String replaceFilePath = args;
             File coreJarFile = AgentConfig.getCoreJarFile();
             if (myClassLoader == null) {
                 myClassLoader = new MyClassloader(
@@ -35,8 +32,8 @@ public class ReloadClassHandler implements Handler {
             }
             AnsiLog.info("agent core urls is {}", coreJarFile.toURI().toURL());
             Class<?> hotReloadWorkerClass = myClassLoader.loadClass(HOT_RELOAD_WORKER_CLASS);
-            Method method = hotReloadWorkerClass.getDeclaredMethod(HOT_RELOAD_RELOAD_METHOD, Instrumentation.class, String[].class);
-            method.invoke(null, inst, splits);
+            Method method = hotReloadWorkerClass.getDeclaredMethod(HOT_RELOAD_RELOAD_METHOD, Instrumentation.class, String.class);
+            method.invoke(null, inst, replaceFilePath);
         } catch (Exception e) {
             AnsiLog.error("Reload failed: {}", e.getMessage());
             AnsiLog.error(e);

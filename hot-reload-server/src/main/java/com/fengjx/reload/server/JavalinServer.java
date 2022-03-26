@@ -36,7 +36,7 @@ public class JavalinServer implements Server {
         });
         app.exception(Exception.class, (e, ctx) -> {
             log.error("server error", e);
-            ctx.json(ResponseKit.fail(e.getMessage()));
+            ctx.json(ResponseKit.fail().setMsg(e.getMessage()));
         });
         app.get("/ping", ctx -> {
             ctx.result("pong");

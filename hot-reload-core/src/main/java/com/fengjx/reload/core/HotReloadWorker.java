@@ -25,10 +25,13 @@ package com.fengjx.reload.core;
 
 import com.fengjx.reload.common.consts.FileExtension;
 import com.fengjx.reload.common.utils.FileUtils;
+import com.fengjx.reload.common.utils.IOUtils;
 import com.fengjx.reload.core.dynamiccompiler.DynamicCompiler;
+import com.fengjx.reload.core.util.ClassByteCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
@@ -50,27 +53,27 @@ public class HotReloadWorker {
 
     private static final Map<String, Class<?>> CLASS_CACHE = new ConcurrentHashMap<>();
 
-    public static void doReload(Instrumentation instrumentation, String[] splits) {
+    public static void doReload(Instrumentation instrumentation, String replaceTargetFile) {
         log.info("class reload start, current classloader is " + HotReloadWorker.class.getClassLoader());
-        String className = splits[0];
-        String replaceTargetFile = splits[1];
         try {
             if (replaceTargetFile == null) {
-                log.error("Invalid argument file is null");
+                log.error("invalid argument file is null");
                 return;
             }
             File file = Paths.get(replaceTargetFile).toFile();
             if (replaceTargetFile.endsWith(FileExtension.CLASS_FILE_EXTENSION)) {
-                log.info("Reload by class file");
+                log.info("reload by class file");
                 byte[] newClazzByteCode = Files.readAllBytes(file.toPath());
+                String className = ClassByteCodeUtils.getClassNameFromByteCode(newClazzByteCode);
                 doReloadClassFile(instrumentation, className, newClazzByteCode);
             } else if (replaceTargetFile.endsWith(FileExtension.JAVA_FILE_EXTENSION)) {
-                log.info("Reload by java file");
+                log.info("reload by java file");
                 byte[] newClazzSourceBytes = Files.readAllBytes(file.toPath());
+                String className = ClassByteCodeUtils.getClassNameFromSourceCode(IOUtils.toString(new FileInputStream(file)));
                 doCompileThenReloadClassFile(instrumentation, className, new String(newClazzSourceBytes, UTF_8));
             }
         } catch (Exception e) {
-            log.error("class reload failed {} {}", className, replaceTargetFile, e);
+            log.error("class reload failed: {}", replaceTargetFile, e);
         }
     }
 

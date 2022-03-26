@@ -8,6 +8,7 @@ default: package
 install: package dist-to-home
 
 dist-to-home:
+	@echo 'HOME_DIR: ' ${HOME_DIR}
 	@rm -rf ${HOME_DIR}/*.jar
 	@mkdir -p ${HOME_DIR}
 	cp hot-reload-core/target/hot-reload-core-jar-with-dependencies.jar ${HOME_DIR}/hot-reload-core.jar
@@ -16,4 +17,5 @@ dist-to-home:
 	cp hot-reload-watcher/target/hot-reload-watcher.jar ${HOME_DIR}/hot-reload-watcher.jar
 
 package:
+	@echo 'JAVA_HOME: ' ${JAVA_HOME}
 	mvn --settings=${maven_settings} clean package -Dmaven.test.skip=true -P full
