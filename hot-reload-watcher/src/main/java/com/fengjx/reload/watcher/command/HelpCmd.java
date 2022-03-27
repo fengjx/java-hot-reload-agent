@@ -26,7 +26,7 @@ public class HelpCmd implements Cmd {
     }
 
     @Override
-    public void handle() {
+    public void handle(String args) {
         CmdFactory cmdFactory = injector.getInstance(CmdFactory.class);
         cmdFactory.getAllCmd().forEach(item -> {
             AnsiLog.info("{} : {}", StrUtils.join(item.key(), ","), item.help());

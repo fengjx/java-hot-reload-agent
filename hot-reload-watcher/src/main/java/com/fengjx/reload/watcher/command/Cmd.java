@@ -10,6 +10,6 @@ public interface Cmd {
 
     String help();
 
-    void handle();
+    void handle(String args);
 
 }

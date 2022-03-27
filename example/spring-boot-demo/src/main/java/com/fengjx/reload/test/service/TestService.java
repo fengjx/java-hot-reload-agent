@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class TestService {
 
     public String list() {
-        return "hello 10000";
+        return "hello 1000";
     }
 
 

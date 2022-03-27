@@ -16,6 +16,9 @@ public class CmdModule extends AbstractModule {
         multibinder.addBinding().toInstance(new HelpCmd());
         multibinder.addBinding().toInstance(new ExitCmd());
         multibinder.addBinding().toInstance(new ReloadCmd());
+        multibinder.addBinding().toInstance(new JpsCmd());
+        multibinder.addBinding().toInstance(new SetPidCmd());
+        multibinder.addBinding().toInstance(new ConfigCmd());
     }
 
 

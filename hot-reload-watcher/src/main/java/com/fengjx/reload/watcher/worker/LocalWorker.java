@@ -3,9 +3,11 @@ package com.fengjx.reload.watcher.worker;
 import com.fengjx.reload.common.AgentConfig;
 import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.jvm.VMUtils;
+import com.fengjx.reload.common.utils.ProcessUtils;
 import com.fengjx.reload.watcher.config.Config;
 import com.google.inject.Inject;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,6 +18,11 @@ public class LocalWorker implements Worker {
 
     @Inject
     private Config config;
+
+    @Override
+    public Map<Long, String> jps() {
+        return ProcessUtils.listProcessByJps(false);
+    }
 
     @Override
     public void doReload(Set<String> files) {

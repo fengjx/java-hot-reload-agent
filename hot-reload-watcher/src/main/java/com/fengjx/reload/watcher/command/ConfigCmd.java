@@ -1,7 +1,8 @@
 package com.fengjx.reload.watcher.command;
 
 import com.fengjx.reload.common.AnsiLog;
-import com.fengjx.reload.watcher.App;
+import com.fengjx.reload.common.utils.JsonUtils;
+import com.fengjx.reload.watcher.config.Config;
 import com.google.inject.Inject;
 
 /**
@@ -9,25 +10,25 @@ import com.google.inject.Inject;
  *
  * @author fengjianxin
  */
-public class ReloadCmd implements Cmd {
+public class ConfigCmd implements Cmd {
 
     @Inject
-    private App app;
+    private Config config;
 
     @Override
     public String[] key() {
-        return new String[]{"r"};
+        return new String[]{"config"};
     }
 
     @Override
     public String help() {
-        return "重新加载变更的 Class";
+        return "查看当前配置";
     }
 
     @Override
     public void handle(String args) {
-        AnsiLog.info("do reload class");
-        app.reload();
+        AnsiLog.info("current config config" +
+                "\n{}", JsonUtils.toPrettyJson(config));
     }
 
 }

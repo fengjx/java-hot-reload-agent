@@ -1,6 +1,5 @@
 package com.fengjx.reload.watcher.command;
 
-import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.watcher.App;
 import com.google.inject.Inject;
 
@@ -25,8 +24,7 @@ public class ExitCmd implements Cmd {
     }
 
     @Override
-    public void handle() {
-        AnsiLog.info("stop hot-reload-watcher-boot");
+    public void handle(String args) {
         app.stop();
     }
 

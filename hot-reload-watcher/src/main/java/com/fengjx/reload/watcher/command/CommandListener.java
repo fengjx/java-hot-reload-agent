@@ -6,6 +6,7 @@ import com.fengjx.reload.watcher.App;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -18,13 +19,18 @@ public class CommandListener implements Runnable {
     private App app;
     @Inject
     private CmdFactory cmdFactory;
+    private Thread thread;
 
     public void listen() {
-        ThreadUtils.run("command-listener", true, this);
+        thread = ThreadUtils.run("command-listener", true, this);
     }
 
     @Override
     public void run() {
+        doWork();
+    }
+
+    private void doWork() {
         while (app.isRunning()) {
             try {
                 AnsiLog.info("输入指令，'h' 查看帮助");
@@ -35,13 +41,28 @@ public class CommandListener implements Runnable {
                 String[] arr = line.split("\\s+");
                 Cmd cmd = cmdFactory.getCmd(arr[0]);
                 if (cmd != null) {
-                    cmd.handle();
+                    cmd.handle(line);
                 }
+            } catch (NoSuchElementException e) {
+                break;
             } catch (Exception e) {
                 AnsiLog.error("cmd exec error: {}", e.getMessage());
                 e.printStackTrace();
             }
         }
-        AnsiLog.info("CommandListener stop");
     }
+
+    public void stop() {
+        try {
+            if (thread.isInterrupted()) {
+                return;
+            }
+            thread.interrupt();
+            thread.join(3000);
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        AnsiLog.info("commandListener stop");
+    }
+
 }

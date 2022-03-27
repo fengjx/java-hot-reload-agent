@@ -3,6 +3,7 @@ package com.fengjx.reload.common;
 import com.fengjx.reload.common.utils.StrUtils;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 /**
  * @author FengJianxin
@@ -18,17 +19,17 @@ public class AgentConfig {
             home = System.getenv(AGENT_HOME_PARAM);
         }
         if (StrUtils.isBlank(home)) {
-            home = System.getProperty("user.home") + File.separator + ".hot-reload-agent";
+            home = Paths.get(System.getProperty("user.home"), ".hot-reload-agent").toString();
         }
         return home;
     }
 
     public static String getAgentJar() {
-        return getHomeDir() + File.separator + "hot-reload-agent.jar";
+        return Paths.get(getHomeDir(), "hot-reload-agent.jar").toString();
     }
 
     public static String getCoreJarPath() {
-        return getHomeDir() + File.separator + "hot-reload-core.jar";
+        return Paths.get(getHomeDir(), "hot-reload-core.jar").toString();
     }
 
     public static File getCoreJarFile() {

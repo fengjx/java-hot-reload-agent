@@ -26,6 +26,18 @@ public class RemoteWorker implements Worker {
     private Config config;
 
     @Override
+    public Map<Long, String> jps() {
+        String res = HttpUtils.get(config.getServer().getProcessListApi());
+        Type type = new TypeToken<Result<Map<Long, String>>>() {
+        }.getType();
+        Result<Map<Long, String>> result = JsonUtils.fromJson(res, type);
+        if (result.getCode() == 200) {
+            return result.getData();
+        }
+        return null;
+    }
+
+    @Override
     public void doReload(Set<String> files) {
         for (String file : files) {
             reloadClass(file);

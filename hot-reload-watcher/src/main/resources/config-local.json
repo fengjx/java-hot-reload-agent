@@ -1,7 +1,7 @@
 {
   "mode": "local",
   "watchPaths": [
-    "/Users/fengjianxin/workspaces/git/my-github/java-hot-reload-agent/example/spring-boot-demo/src/main/java"
+    "/path/to/source/dir"
   ],
-  "pid": 0,
+  "pid": 0
 }

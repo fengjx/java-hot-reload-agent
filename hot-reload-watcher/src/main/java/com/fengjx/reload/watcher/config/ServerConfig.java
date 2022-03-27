@@ -16,4 +16,8 @@ public class ServerConfig {
         return PROTOCOL + host + "/hotReload";
     }
 
+    public String getProcessListApi() {
+        return PROTOCOL + host + "/process/list";
+    }
+
 }

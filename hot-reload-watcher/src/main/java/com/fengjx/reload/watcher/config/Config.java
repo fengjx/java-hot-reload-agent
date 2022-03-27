@@ -31,12 +31,12 @@ public class Config {
         if (StrUtils.isNotBlank(configPath)) {
             config = JsonUtils.fromJson(IOUtils.toString(IOUtils.toInputStream(configPath)), Config.class);
         }
-        config.setMode(PropUtils.getProp("watcher.mode", config.getMode()));
-        config.setPid(Integer.parseInt(PropUtils.getProp("watcher.pid", config.getPid() + "")));
+        config.setMode(PropUtils.getProp("watcher_mode", config.getMode()));
+        config.setPid(Integer.parseInt(PropUtils.getProp("watcher_pid", config.getPid() + "")));
         if (config.getWatchPaths() != null) {
             config.watchPaths = config.getWatchPaths();
         } else {
-            String paths = PropUtils.getProp("watcher.paths");
+            String paths = PropUtils.getProp("watcher_paths");
             if (StrUtils.isBlank(paths)) {
                 throw new InvalidParameterException("[watchPaths] 未指定");
             }
@@ -46,7 +46,7 @@ public class Config {
         if (config.getServer() != null) {
             server = config.getServer();
         }
-        String serverHost = PropUtils.getProp("watcher.server.host");
+        String serverHost = PropUtils.getProp("watcher_server_host");
         if (StrUtils.isNotBlank(serverHost)) {
             server.setHost(serverHost);
         }

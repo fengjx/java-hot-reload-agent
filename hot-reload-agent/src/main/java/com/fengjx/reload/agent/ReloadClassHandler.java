@@ -26,6 +26,10 @@ public class ReloadClassHandler implements Handler {
         try {
             final String replaceFilePath = args;
             File coreJarFile = AgentConfig.getCoreJarFile();
+            if (!coreJarFile.exists()) {
+                throw new RuntimeException("croe jar [" + coreJarFile.getAbsolutePath() + "] " +
+                        "not found, see com.fengjx.reload.common.AgentConfig#getCoreJarFile");
+            }
             if (myClassLoader == null) {
                 myClassLoader = new MyClassloader(
                         new URL[]{coreJarFile.toURI().toURL()});

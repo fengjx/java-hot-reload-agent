@@ -29,6 +29,7 @@ public class App {
         running = true;
         startWatcher();
         startCommandListener();
+        Runtime.getRuntime().addShutdownHook(new Thread(this::stop, "watcher-shutdown-hook"));
     }
 
     private void startWatcher() {
@@ -44,8 +45,8 @@ public class App {
             return;
         }
         running = false;
+        commandListener.stop();
         watcher.stop();
-        System.exit(0);
     }
 
     public boolean isRunning() {

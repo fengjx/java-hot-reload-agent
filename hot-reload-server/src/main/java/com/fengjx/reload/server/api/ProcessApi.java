@@ -1,7 +1,10 @@
 package com.fengjx.reload.server.api;
 
+import com.fengjx.reload.common.utils.ProcessUtils;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
+
+import java.util.Map;
 
 /**
  * @author FengJianxin
@@ -15,7 +18,8 @@ public class ProcessApi implements Router {
     }
 
     public void processList(Context ctx) {
-        ctx.json(ResponseKit.ok());
+        Map<Long, String> process = ProcessUtils.listProcessByJps(false);
+        ctx.json(ResponseKit.ok(process));
     }
 
 }
