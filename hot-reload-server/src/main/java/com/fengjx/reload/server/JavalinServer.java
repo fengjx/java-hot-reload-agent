@@ -24,7 +24,7 @@ public class JavalinServer implements Server {
 
     private void init() {
         log.info("hot-reload-server init");
-        int port = Integer.parseInt(PropUtils.getProp("server.port", "8080"));
+        int port = Integer.parseInt(PropUtils.getProp("server.port", "8000"));
         config.init(port);
     }
 
