@@ -158,8 +158,9 @@ server()
 
   export AGENT_HOME=$BASE
   echo "[INFO] AGENT_HOME: "${AGENT_HOME}
+  echo "[INFO] args: "$@
 
-  java ${JVM_OPTS} -jar hot-reload-server.jar
+  java ${JVM_OPTS} $@ -jar hot-reload-server.jar
 }
 
 
