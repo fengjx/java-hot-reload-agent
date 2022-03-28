@@ -78,7 +78,7 @@ watcher 配置
 
 演示
 
-![无法加载，请点击视频链接](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.gif)
+<iframe src="http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.mp4" style="width:100%; height:100%;"></iframe>
 
 [视频链接](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.mp4)
 
