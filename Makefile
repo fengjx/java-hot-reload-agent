@@ -9,7 +9,7 @@ install: package dist-to-home
 
 dist-to-home:
 	@echo 'HOME_DIR: ' ${HOME_DIR}
-	@rm -rf ${HOME_DIR}/*.jar ${HOME_DIR}/*.sh ${HOME_DIR}/doc ${HOME_DIR}/*.md
+	@rm -rf ${HOME_DIR}/*.jar ${HOME_DIR}/*.sh ${HOME_DIR}/doc ${HOME_DIR}/*.md  ${HOME_DIR}/config.json  ${HOME_DIR}/config-local.json
 	@mkdir -p ${HOME_DIR}
 	unzip packaging/target/hot-reload-agent-bin.zip -d ${HOME_DIR}
 

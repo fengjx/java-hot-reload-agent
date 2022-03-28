@@ -4,7 +4,7 @@ java 热更新插件，无需重启 java 进程实现代码更新，提高开发
 
 ## 功能模块
 
-- hot-reload-core: 核心处理逻辑，编译&加载 class 
+- hot-reload-core: 核心处理逻辑，编译&加载 class
 - hot-reload-agent: javaagent 入口
 - hot-reload-watcher: 监听本地 java 和 class 文件变化，实现本地进程热更新
 - hot-reload-server: api server，提供接口实现加载远程 jvm 进程
@@ -13,10 +13,10 @@ java 热更新插件，无需重启 java 进程实现代码更新，提高开发
 
 ![](doc/java-hot-reload-agent.jpg)
 
-
 ## 安装&使用
 
 ### 下载&安装（也可以用自行编译）
+
 ```bash
 version="1.0.1-beta"
 # 从 github 下载
@@ -25,42 +25,80 @@ wget https://github.com/fengjx/java-hot-reload-agent/releases/download/hot-reloa
 unzip hot-reload-agent-bin.zip -d hot-reload-agent
 ```
 
-### 本地模式
+### 启动 watcher
+
 ```bash
 # 启动
 cd hot-reload-agent
-sh boot.sh watcher $pid $path1,$path2
+sh boot.sh watcher -c /path/to/config.json
+[INFO] start hot-reload-watcher
+[INFO] JAVA_HOME: /Users/fengjianxin/opt/java/jdk/jdk8
+[INFO] AGENT_HOME: /Users/fengjianxin/.hot-reload-agent
+[INFO] args: -c /path/to/config.json
+[INFO] config: {
+  "mode": "server",
+  "pid": 0,
+  "watchPaths": [
+    "/path/to/source/dir"
+  ],
+  "server": {
+    "host": "localhost:8000"
+  }
+}
+[INFO] 输入指令，'h' 查看帮助
 ```
-- pid: java 进程 id
-- path: 监听的文件根目录，支持监听 `.class` 和 `.java` 文件，多个目录用`,`分隔
 
-watcher 启动后，可以输入指令完成相关操作，输入 `h` 查看帮助
+watcher 指令
 
+| 指令       | 参数      | 说明              |
+|----------|---------|-----------------|
+| h,help,? | -       | 查看帮助            |
+| exit,q   | -       | 退出进程            |
+| r        | -       | 将变更的文件重新加载到 jvm |
+| jps      | -       | 查看 jvm 进程列表     |
+| config         | -       | 查看当前配置          |
+| set-pid         | \<pid\> | 修改 jvm 进程 id    |
+
+### 本地模式
+
+watcher 配置
+```json
+{
+  "mode": "local",  // local: 本地模式
+  "watchPaths": [ 监听的文件路径（.java & .class），支持多个路径
+    "/path/to/source/dir"
+  ],
+  "pid": 0  // 可选，支持环境变量指定，或通过指令设置
+}
 ```
-[INFO] input command
-h
-[INFO] r : 重新加载变更的 Class
-[INFO] exit : 退出进程
-[INFO] h,help,? : 使用帮助
-```
 
-#### `r` 
+演示
 
-重新加载所有变更
+![](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.mp4)
 
-#### `exit`
-
-退出进程
-
-#### `h`,`help`,`?`
-
-帮助说明
+<video width="320" height="240" controls>
+  <source src="http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.mp4" type="video/mp4">
+</video>
 
 ![](./doc/usage-watcher.gif)
 
 ### server 模式
 
-开发中
+watcher 配置
+```json
+{
+  "mode": "server", // 远程模式
+  "watchPaths": [ // 监听的文件路径（.java & .class），支持多个路径
+    "/path/to/source/dir"
+  ],
+  "pid": 0, // 可选，支持环境变量指定，或通过指令设置
+  "server": {
+    "host": "localhost:8000"  // 远程服务 ip:port
+  }
+}
+```
+
+演示
 
 ## 编译打包
 

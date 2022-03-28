@@ -1,9 +1,11 @@
 package com.fengjx.reload.watcher;
 
-import com.fengjx.reload.common.AnsiLog;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
 
 /**
  * @author fengjianxin
@@ -21,7 +23,6 @@ public class WatcherBootstrap {
         final Injector injector = Guice.createInjector(new AppModule(config));
         final App app = injector.getInstance(App.class);
         app.start();
-        AnsiLog.info("start hot-reload-watcher-boot");
     }
 
 }

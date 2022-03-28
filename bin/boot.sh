@@ -153,7 +153,13 @@ watcher()
 
 server()
 {
-  echo "功能未实现，敬请期待"
+  echo "[INFO] start hot-reload-server"
+  set_env
+
+  export AGENT_HOME=$BASE
+  echo "[INFO] AGENT_HOME: "${AGENT_HOME}
+
+  java ${JVM_OPTS} -jar hot-reload-server.jar
 }
 
 
