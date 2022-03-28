@@ -30,7 +30,7 @@ unzip hot-reload-agent-bin.zip -d hot-reload-agent
 ```bash
 # 启动
 cd hot-reload-agent
-sh boot.sh watcher -c /path/to/config.json
+bash boot.sh watcher -c /path/to/config.json
 [INFO] start hot-reload-watcher
 [INFO] JAVA_HOME: /Users/fengjianxin/opt/java/jdk/jdk8
 [INFO] AGENT_HOME: /Users/fengjianxin/.hot-reload-agent
@@ -62,7 +62,9 @@ watcher 指令
 ### 本地模式
 
 watcher 配置
+
 ```json
+// config.json
 {
   "mode": "local",  // local: 本地模式
   "watchPaths": [ 监听的文件路径（.java & .class），支持多个路径
@@ -74,18 +76,14 @@ watcher 配置
 
 演示
 
-![](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.mp4)
-
-<video width="320" height="240" controls>
-  <source src="http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.mp4" type="video/mp4">
-</video>
-
-![](./doc/usage-watcher.gif)
+![](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.gif)
 
 ### server 模式
 
 watcher 配置
+
 ```json
+// config.json
 {
   "mode": "server", // 远程模式
   "watchPaths": [ // 监听的文件路径（.java & .class），支持多个路径
@@ -98,7 +96,16 @@ watcher 配置
 }
 ```
 
+在远程服务器上启动 server
+
+```bash
+# -Dserver.port=6000 指定端口号，默认 8000
+bash boot.sh server -Dserver.port=6000
+```
+
 演示
+
+![](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-server.gif)
 
 ## 编译打包
 
@@ -121,9 +128,9 @@ mvn --settings=${maven_settings} clean package -Dmaven.test.skip=true -P full
 
 ## 测试覆盖情况
 
-| 操作系统      | jdk 版本 | 说明 |
-| ----------- | ----------- |------|
-| MacOS 12.0.1       | openjdk 1.8       | - |
+| 操作系统       | jdk 版本         | 说明 |
+|------------|----------------|------|
+| MacOS 12.3 | oracle-jdk 1.8 | - |
 
 精力有限，其他未覆盖平台自行测试，如果你已测试过，欢迎联系补充
 
