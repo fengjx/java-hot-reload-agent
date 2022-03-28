@@ -18,7 +18,7 @@ java 热更新插件，无需重启 java 进程实现代码更新，提高开发
 ### 下载&安装（也可以用自行编译）
 
 ```bash
-version="1.0.1-beta"
+version="1.1.0"
 # 从 github 下载
 wget https://github.com/fengjx/java-hot-reload-agent/releases/download/hot-reload-agent-all-${version}/hot-reload-agent-bin.zip
 # 解压都任意目录
@@ -47,6 +47,8 @@ bash boot.sh watcher -c /path/to/config.json
 }
 [INFO] 输入指令，'h' 查看帮助
 ```
+
+`config.json` 参考: `hot-reload-watcher/src/main/resources/config.json`
 
 watcher 指令
 
