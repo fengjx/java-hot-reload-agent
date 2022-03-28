@@ -76,11 +76,7 @@ watcher 配置
 }
 ```
 
-演示
-
-<iframe src="http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.mp4" style="width:100%; height:100%;"></iframe>
-
-[视频链接](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.mp4)
+[演示视频链接](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.mp4)
 
 ### server 模式
 
@@ -107,11 +103,7 @@ watcher 配置
 bash boot.sh server -Dserver.port=6000
 ```
 
-演示
-
-![无法加载，请点击视频链接](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-server.gif)
-
-[视频链接](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-server.mp4)
+[演示视频链接](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-server.mp4)
 
 ## 编译打包
 
