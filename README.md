@@ -78,7 +78,9 @@ watcher 配置
 
 演示
 
-![](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.gif)
+<video src="http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.mp4" controls="controls" width="100%" height="100%">您的浏览器不支持播放该视频！</video>
+
+[视频链接](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-local.mp4)
 
 ### server 模式
 
@@ -107,7 +109,9 @@ bash boot.sh server -Dserver.port=6000
 
 演示
 
-![](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-server.gif)
+<video src="http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-server.mp4" controls="controls" width="100%" height="100%">您的浏览器不支持播放该视频！</video>
+
+[视频链接](http://cdn.fengjx.com/java-hot-reload-agent/1.1.0/java-hot-reload-agent-1.1.0-server.mp4)
 
 ## 编译打包
 
@@ -141,8 +145,9 @@ mvn --settings=${maven_settings} clean package -Dmaven.test.skip=true -P full
 1. watcher 监听本地文件变更（.class & .java）并缓存变更文件路径
 2. 将变更文件上传到 server 并保存在临时目录（本地模式忽略次步骤）
 3. 通过 javaagent 技术 attach 到 jvm 进程，拿到`Instrumentation`对象
-4. 使用自定义类加载器（与业务代码隔离）加载 `hot-reload-core` 编译 java 文件（如有）
-5. 读取 class 文件字节码，通过`instrumentation.redefineClasses()`方法重新定义并加载 class
+4. 使用自定义类加载器（与业务代码隔离）加载 `hot-reload-core` 
+5. 编译 .java 文件或从文件读取 .clsss，得到字节码 byte
+6. 通过`instrumentation.redefineClasses()`方法重新定义并加载 class
 
 ## todo list
 
