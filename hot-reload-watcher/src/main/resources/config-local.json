@@ -1,0 +1,7 @@
+{
+  "mode": "local",
+  "watchPaths": [
+    "/path/to/source/dir"
+  ],
+  "pid": 0
+}

@@ -8,12 +8,11 @@ default: package
 install: package dist-to-home
 
 dist-to-home:
-	@rm -rf ${HOME_DIR}/*.jar
+	@echo 'HOME_DIR: ' ${HOME_DIR}
+	@rm -rf ${HOME_DIR}/*.jar ${HOME_DIR}/*.sh ${HOME_DIR}/doc ${HOME_DIR}/*.md  ${HOME_DIR}/config.json  ${HOME_DIR}/config-local.json
 	@mkdir -p ${HOME_DIR}
-	cp hot-reload-core/target/hot-reload-core-jar-with-dependencies.jar ${HOME_DIR}/hot-reload-core.jar
-	cp hot-reload-agent/target/hot-reload-agent-jar-with-dependencies.jar ${HOME_DIR}/hot-reload-agent.jar
-	cp hot-reload-server/target/hot-reload-server-jar-with-dependencies.jar ${HOME_DIR}/hot-reload-server.jar
-	cp hot-reload-watcher/target/hot-reload-watcher.jar ${HOME_DIR}/hot-reload-watcher.jar
+	unzip packaging/target/hot-reload-agent-bin.zip -d ${HOME_DIR}
 
 package:
+	@echo 'JAVA_HOME: ' ${JAVA_HOME}
 	mvn --settings=${maven_settings} clean package -Dmaven.test.skip=true -P full

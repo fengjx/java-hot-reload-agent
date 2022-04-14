@@ -1,6 +1,7 @@
 package com.fengjx.reload.watcher;
 
-import com.fengjx.reload.common.AnsiLog;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -14,17 +15,14 @@ public class WatcherBootstrap {
 
     public static void main(String[] args) throws Exception {
         CommandLineParser defaultParser = new DefaultParser();
-        Options options = new Options()
-                .addOption("path", "path", true, "hot reload class watch path")
-                .addOption("pid", "pid", true, "java process id");
+        Options options = new Options();
+        options.addOption("c", "config", true, "start mode");
+
         CommandLine commandLine = defaultParser.parse(options, args);
-        String path = commandLine.getOptionValue("path");
-        String pid = commandLine.getOptionValue("pid");
-        Config.init(pid, path.split(","));
-        AnsiLog.info("start hot-reload-watcher-boot");
-        AnsiLog.info("pid: {}", pid);
-        AnsiLog.info("watchPath: {}", path);
-        App.me().start();
+        String config = commandLine.getOptionValue("c");
+        final Injector injector = Guice.createInjector(new AppModule(config));
+        final App app = injector.getInstance(App.class);
+        app.start();
     }
 
 }

@@ -3,8 +3,10 @@ package com.fengjx.reload.watcher;
 import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.consts.FileExtension;
 import com.fengjx.reload.common.utils.DigestUtils;
-import com.fengjx.reload.watcher.worker.Worker;
+import com.fengjx.reload.watcher.config.Config;
 import com.fengjx.reload.watcher.worker.WorkerFactory;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
@@ -24,21 +26,19 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author FengJianxin
  */
+@Singleton
 public class Watcher extends FileAlterationListenerAdaptor {
 
-    private final String[] watchPaths;
     private FileAlterationMonitor monitor;
     private final ConcurrentHashMap<String, String> oldVersion = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, String> fileCache = new ConcurrentHashMap<>();
-    private final Worker worker;
-
-    public Watcher() {
-        Config config = Config.me();
-        this.watchPaths = config.getWatchPaths();
-        this.worker = WorkerFactory.createWorker();
-    }
+    @Inject
+    private WorkerFactory workerFactory;
+    @Inject
+    private Config config;
 
     private void loadOldVersion(String[] watchPaths) throws IOException, NoSuchAlgorithmException {
+        // 记录当前文件版本，checksum 作为版本标识
         for (String watchPath : watchPaths) {
             Collection<File> files = FileUtils.listFiles(new File(watchPath), new String[]{
                     FileExtension.CLASS_FILE_EXT,
@@ -66,7 +66,6 @@ public class Watcher extends FileAlterationListenerAdaptor {
      */
     @Override
     public void onFileChange(File file) {
-        AnsiLog.info("modify: {}", file.getAbsolutePath());
         addCache(file);
     }
 
@@ -79,35 +78,32 @@ public class Watcher extends FileAlterationListenerAdaptor {
         removeCache(file);
     }
 
-    private void addCache(File file) {
-        synchronized (this) {
-            try {
-                String absolutePath = file.getAbsolutePath();
-                String checksum = DigestUtils.checksum(file);
-                String oldChecksum = fileCache.get(absolutePath);
-                if (checksum.equals(oldChecksum)) {
-                    return;
-                }
-                fileCache.put(absolutePath, checksum);
-                AnsiLog.info("add watch file cache: {}", absolutePath);
-            } catch (Exception e) {
-                AnsiLog.error("add watch file cache error", e);
+    private synchronized void addCache(File file) {
+        try {
+            String absolutePath = file.getAbsolutePath();
+            String checksum = DigestUtils.checksum(file);
+            String oldChecksum = fileCache.get(absolutePath);
+            if (checksum.equals(oldChecksum)) {
+                return;
             }
+            fileCache.put(absolutePath, checksum);
+            AnsiLog.info("add watch file cache: {}", absolutePath);
+        } catch (Exception e) {
+            AnsiLog.error("add watch file cache error", e);
         }
     }
 
-    private void removeCache(File file) {
-        synchronized (this) {
-            String absolutePath = file.getAbsolutePath();
-            fileCache.remove(absolutePath);
-            oldVersion.remove(absolutePath);
-            AnsiLog.info("remove watch file cache: {}", absolutePath);
-        }
+    private synchronized void removeCache(File file) {
+        String absolutePath = file.getAbsolutePath();
+        fileCache.remove(absolutePath);
+        oldVersion.remove(absolutePath);
+        AnsiLog.info("remove watch file cache: {}", absolutePath);
     }
 
 
     public void start() {
         AnsiLog.debug("watcher start");
+        String[] watchPaths = config.getWatchPaths();
         try {
             loadOldVersion(watchPaths);
             // 轮询间隔 3 秒
@@ -162,7 +158,8 @@ public class Watcher extends FileAlterationListenerAdaptor {
     /**
      * 重新加载变更的 Class
      */
-    public void reloadClass() {
+    public synchronized void reloadClass() {
+        AnsiLog.info("start reload class");
         Set<String> fileSet = new HashSet<>();
         for (Map.Entry<String, String> entry : fileCache.entrySet()) {
             String path = entry.getKey();
@@ -177,7 +174,7 @@ public class Watcher extends FileAlterationListenerAdaptor {
             AnsiLog.info("No change files");
             return;
         }
-        worker.doReload(fileSet);
+        workerFactory.getWorker().doReload(fileSet);
     }
 
     private boolean check(String path, String checksum) {

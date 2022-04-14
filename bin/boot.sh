@@ -145,18 +145,22 @@ watcher()
 
   export AGENT_HOME=$BASE
   echo "[INFO] AGENT_HOME: "${AGENT_HOME}
-  pid=$1
-  echo "[INFO] pid: "${pid}
-  watch_path=$2
-  echo "[INFO] watch path: "${watch_path}
+  echo "[INFO] args: "$@
 
-  java ${JVM_OPTS} -jar hot-reload-watcher.jar --pid=${pid} --path=${watch_path}
+  java ${JVM_OPTS} -jar hot-reload-watcher.jar $@
 }
 
 
 server()
 {
-  echo "功能未实现，敬请期待"
+  echo "[INFO] start hot-reload-server"
+  set_env
+
+  export AGENT_HOME=$BASE
+  echo "[INFO] AGENT_HOME: "${AGENT_HOME}
+  echo "[INFO] args: "$@
+
+  java ${JVM_OPTS} $@ -jar hot-reload-server.jar
 }
 
 

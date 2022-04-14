@@ -13,9 +13,18 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.sparkjava</groupId>
-            <artifactId>spark-core</artifactId>
-            <version>2.9.3</version>
+            <groupId>com.fengjx.reload</groupId>
+            <artifactId>hot-reload-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.javalin</groupId>
+            <artifactId>javalin</artifactId>
+            <version>4.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>5.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -35,17 +44,6 @@
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <encoding>${encoding}</encoding>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <!-- 显示编译告警信息-->
-                    <compilerArgument>-Xlint:unchecked</compilerArgument>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

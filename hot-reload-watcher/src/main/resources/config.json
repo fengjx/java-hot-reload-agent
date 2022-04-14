@@ -1,0 +1,10 @@
+{
+  "mode": "server",
+  "watchPaths": [
+    "/path/to/source/dir"
+  ],
+  "pid": 0,
+  "server": {
+    "host": "localhost:8000"
+  }
+}

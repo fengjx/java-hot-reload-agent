@@ -2,12 +2,12 @@ package com.fengjx.reload.watcher.worker;
 
 import com.fengjx.reload.common.AgentConfig;
 import com.fengjx.reload.common.AnsiLog;
-import com.fengjx.reload.common.consts.FileExtension;
-import com.fengjx.reload.common.utils.StrUtils;
-import com.fengjx.reload.watcher.Config;
-import com.sun.tools.attach.VirtualMachine;
+import com.fengjx.reload.common.jvm.VMUtils;
+import com.fengjx.reload.common.utils.ProcessUtils;
+import com.fengjx.reload.watcher.config.Config;
+import com.google.inject.Inject;
 
-import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,63 +16,40 @@ import java.util.Set;
  */
 public class LocalWorker implements Worker {
 
+    @Inject
+    private Config config;
+
+    @Override
+    public Map<Long, String> jps() {
+        return ProcessUtils.listProcessByJps(false);
+    }
+
     @Override
     public void doReload(Set<String> files) {
         for (String file : files) {
-            reloadClass(fileToClassName(file), file);
+            reloadClass(file);
         }
     }
 
     /**
-     * 文件路径转类名
+     * 重新加载 class 到本地 jvm
+     *
+     * @param targetFilePath .class or .java
      */
-    private String fileToClassName(String classFilePath) {
-        String[] watchPaths = Config.me().getWatchPaths();
-        String path = classFilePath;
-        for (String watchPath : watchPaths) {
-            if (path.startsWith(watchPath)) {
-                path = path.substring(watchPath.length());
-                break;
-            }
-        }
-        path = path.replace(FileExtension.CLASS_FILE_EXTENSION, "")
-                .replace(FileExtension.JAVA_FILE_EXTENSION, "");
-
-        String className = path.replaceAll("/", ".")
-                .replaceAll("\\\\", ".");
-        if (className.startsWith(".")) {
-            className = className.substring(1);
-        }
-        if (className.endsWith(".")) {
-            className = className.substring(0, className.length() - 1);
-        }
-        return className;
-    }
-
-    private synchronized void reloadClass(String className, String classFilePath) {
-        AnsiLog.info("Reload class: {}", className);
-        String pid = Config.me().getPid();
-        if (StrUtils.isBlank(pid)) {
+    private void reloadClass(String targetFilePath) {
+        AnsiLog.info("reload class: {}", targetFilePath);
+        int pid = config.getPid();
+        if (pid == 0) {
+            AnsiLog.warn("pid is null");
             return;
         }
-        VirtualMachine attach = null;
+        AnsiLog.debug("load agent jar: {}", AgentConfig.getAgentJar());
         try {
-            attach = VirtualMachine.attach(pid);
-            AnsiLog.debug("Load agent jar: {}", AgentConfig.getAgentJar());
-            attach.loadAgent(AgentConfig.getAgentJar(), className + "," + classFilePath);
-            AnsiLog.info("Reload class success");
+            VMUtils.reloadClassForLocalVM(String.valueOf(pid), targetFilePath);
+            AnsiLog.info("reload class[{}] success", targetFilePath);
         } catch (Exception e) {
-            AnsiLog.error("Reload class error");
+            AnsiLog.error("reload class[{}] error", targetFilePath);
             AnsiLog.error(e);
-        } finally {
-            if (attach != null) {
-                try {
-                    attach.detach();
-                } catch (IOException e) {
-                    AnsiLog.error("VirtualMachine detach error", e);
-                }
-            }
-            AnsiLog.info("Reload class finished");
         }
     }
 

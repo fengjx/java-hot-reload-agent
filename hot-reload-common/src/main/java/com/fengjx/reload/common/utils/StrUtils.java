@@ -10,6 +10,12 @@ import java.util.Objects;
  */
 public class StrUtils {
 
+    private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    public static String[] trims(String[] src) {
+        return Arrays.stream(src).map(String::trim).toArray(String[]::new);
+    }
+
 
     public static boolean isEmpty(String str) {
         return str == null || str.length() == 0;
@@ -59,6 +65,14 @@ public class StrUtils {
     private static CharSequence toString(Object part) {
         Objects.requireNonNull(part);
         return part instanceof CharSequence ? (CharSequence) part : part.toString();
+    }
+
+    public static String randomString(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(AB.charAt(ThreadLocalRandom.current().nextInt(AB.length())));
+        }
+        return sb.toString();
     }
 
 }

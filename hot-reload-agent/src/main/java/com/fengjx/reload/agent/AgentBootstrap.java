@@ -17,14 +17,14 @@ public class AgentBootstrap {
      * 启动时加载
      */
     public static void premain(String args, Instrumentation inst) {
-        AnsiLog.info("premain agent: {}", VersionUtils.getLatestVersion());
+        AnsiLog.info("premain agent: {}, args: {}", VersionUtils.getLatestVersion(), args);
     }
 
     /**
      * 运行时加载（attach）
      */
     public static void agentmain(String args, Instrumentation inst) {
-        AnsiLog.info("agentmain agent: " + VersionUtils.getLatestVersion());
+        AnsiLog.info("agentmain agent: {}, args：{}", VersionUtils.getLatestVersion(), args);
         Handler handler = new ReloadClassHandler();
         handler.process(args, inst);
     }
