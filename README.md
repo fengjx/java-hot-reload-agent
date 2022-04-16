@@ -145,6 +145,23 @@ mvn --settings=${maven_settings} clean package -Dmaven.test.skip=true -P full
 
 <https://github.com/fengjx/java-hot-reload-agent/issues?q=is%3Aopen+is%3Aissue>
 
+
+## FAQ
+
+- 为什么只支持方法体内逻辑修改，不支持新增方法和字段
+    
+    这是 jvm 自身安全机制的限制，不允许加载新的方法和字段，参考：[Java动态追踪技术探究](https://tech.meituan.com/2019/02/28/java-dynamic-trace.html)
+    
+    可以使用 dcevm jdk 解决
+    - <https://github.com/dcevm/dcevm>
+    - <https://github.com/TravaOpenJDK/trava-jdk-11-dcevm>
+    - <https://github.com/TravaOpenJDK/trava-jdk-8-dcevm>
+    
+- 新增 spring bean 为什么无法注入
+    
+    新增的 Class 这是加载到了 jvm，还没有加载到 spring 中，需要额外加载逻辑来实现 spring bean 动态加载（后续会支持）
+
+
 ## 参考项目
 
 - [arthas](https://github.com/alibaba/arthas)
