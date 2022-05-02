@@ -4,19 +4,20 @@ import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.utils.JsonUtils;
 import com.fengjx.reload.watcher.config.Config;
 import com.google.inject.Inject;
+import org.apache.commons.cli.CommandLine;
 
 /**
  * 加载变更 Class
  *
  * @author fengjianxin
  */
-public class ConfigCmd implements Cmd {
+public class ConfigCmd extends SampleCmd implements Cmd {
 
     @Inject
     private Config config;
 
     @Override
-    public String[] key() {
+    public String[] name() {
         return new String[]{"config"};
     }
 
@@ -26,7 +27,7 @@ public class ConfigCmd implements Cmd {
     }
 
     @Override
-    public void handle(String args) {
+    public void handle(CommandLine line) {
         AnsiLog.info("current config config" +
                 "\n{}", JsonUtils.toPrettyJson(config));
     }

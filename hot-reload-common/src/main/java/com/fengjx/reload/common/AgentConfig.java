@@ -1,5 +1,6 @@
 package com.fengjx.reload.common;
 
+import com.fengjx.reload.common.utils.PropUtils;
 import com.fengjx.reload.common.utils.StrUtils;
 
 import java.io.File;
@@ -36,5 +37,8 @@ public class AgentConfig {
         return new File(getCoreJarPath());
     }
 
+    public static boolean isDisableSubClass() {
+        return "true".equals(PropUtils.getProp("AGENT_DISABLE_SUBCLASS"));
+    }
 
 }
