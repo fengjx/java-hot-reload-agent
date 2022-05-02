@@ -4,6 +4,7 @@ import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.utils.MapUtils;
 import com.fengjx.reload.watcher.worker.WorkerFactory;
 import com.google.inject.Inject;
+import org.apache.commons.cli.CommandLine;
 
 import java.util.Map;
 
@@ -12,13 +13,13 @@ import java.util.Map;
  *
  * @author fengjianxin
  */
-public class JpsCmd implements Cmd {
+public class JpsCmd extends SampleCmd implements Cmd {
 
     @Inject
     private WorkerFactory workerFactory;
 
     @Override
-    public String[] key() {
+    public String[] name() {
         return new String[]{"jps"};
     }
 
@@ -28,7 +29,7 @@ public class JpsCmd implements Cmd {
     }
 
     @Override
-    public void handle(String args) {
+    public void handle(CommandLine line) {
         Map<Long, String> processMap = workerFactory.getWorker().jps();
         if (MapUtils.isEmpty(processMap)) {
             AnsiLog.info("jvm process is empty");

@@ -2,19 +2,20 @@ package com.fengjx.reload.watcher.command;
 
 import com.fengjx.reload.watcher.App;
 import com.google.inject.Inject;
+import org.apache.commons.cli.CommandLine;
 
 /**
  * 退出程序
  *
  * @author fengjianxin
  */
-public class ExitCmd implements Cmd {
+public class ExitCmd extends SampleCmd implements Cmd {
 
     @Inject
     private App app;
 
     @Override
-    public String[] key() {
+    public String[] name() {
         return new String[]{"exit", "q"};
     }
 
@@ -24,7 +25,7 @@ public class ExitCmd implements Cmd {
     }
 
     @Override
-    public void handle(String args) {
+    public void handle(CommandLine line) {
         app.stop();
     }
 

@@ -4,19 +4,20 @@ import com.fengjx.reload.common.AnsiLog;
 import com.fengjx.reload.common.utils.StrUtils;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
+import org.apache.commons.cli.CommandLine;
 
 /**
  * 退出程序
  *
  * @author fengjianxin
  */
-public class HelpCmd implements Cmd {
+public class HelpCmd extends SampleCmd implements Cmd {
 
     @Inject
     private Injector injector;
 
     @Override
-    public String[] key() {
+    public String[] name() {
         return new String[]{"h", "help", "?"};
     }
 
@@ -26,11 +27,13 @@ public class HelpCmd implements Cmd {
     }
 
     @Override
-    public void handle(String args) {
+    public void handle(CommandLine line) {
         CmdFactory cmdFactory = injector.getInstance(CmdFactory.class);
+        StringBuilder helpInfo = new StringBuilder("usage \n");
         cmdFactory.getAllCmd().forEach(item -> {
-            AnsiLog.info("{} : {}", StrUtils.join(item.key(), ","), item.help());
+            helpInfo.append(StrUtils.join(item.name(), ",")).append(" : ").append(item.help()).append("\n");
         });
+        AnsiLog.info(helpInfo.toString());
     }
 
 }

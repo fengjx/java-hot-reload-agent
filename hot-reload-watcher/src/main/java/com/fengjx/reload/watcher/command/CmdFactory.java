@@ -20,7 +20,7 @@ public class CmdFactory {
     @Inject
     public CmdFactory(Set<Cmd> cmds) {
         for (Cmd cmd : cmds) {
-            for (String key : cmd.key()) {
+            for (String key : cmd.name()) {
                 cmdMap.put(key, cmd);
             }
         }
