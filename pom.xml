@@ -254,6 +254,9 @@
 
         <profile>
             <id>full</id>
+            <activation>
+                <jdk>[1.8,9)</jdk>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>com.sun</groupId>
